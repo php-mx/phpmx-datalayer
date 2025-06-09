@@ -4,6 +4,9 @@
 
 /migration
 
+#phpmx-core
+/storage/certificate
+
 #phpmx-server
 /storage/sqlite
 /storage/scheme
