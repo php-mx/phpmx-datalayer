@@ -1,3 +1,25 @@
 {
-  "minimum-stability": "dev"
+    "name": "phpmx/datalayer",
+    "description": "Camada de conexão com banco de dados para aplicações PHP MX",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "André Ricardo",
+            "email": "contatoadmx@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "": "source/"
+        },
+        "files": [
+            "helper/script/path.php"
+        ]
+    },
+    "require": {
+        "phpmx/core": "dev-main",
+        "ext-pdo_mysql": "*",
+        "ext-pdo_sqlite": "*"
+    }
 }
