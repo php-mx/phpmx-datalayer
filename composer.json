@@ -14,6 +14,10 @@
             "": "source/"
         },
         "files": [
+            "helper/function/idKey.php",
+            "helper/function/is.php",
+            "helper/function/syncIds.php",
+            "helper/script/env.php",
             "helper/script/path.php"
         ]
     },

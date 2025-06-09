@@ -1,0 +1,12 @@
+<?php
+
+namespace [#namespace]\Record;
+
+class Record[#tableClass] extends \[#namespace]\Driver\DriverRecord[#tableClass]
+{
+    protected function _onCreate() {}
+
+    protected function _onUpdate() {}
+
+    protected function _onDelete() {}
+}

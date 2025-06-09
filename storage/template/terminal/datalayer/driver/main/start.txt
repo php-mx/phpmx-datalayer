@@ -1,0 +1,1 @@
+[#mainClass]::$[#tableMethod] = new \[#namespace]\Table\Table[#tableClass]();

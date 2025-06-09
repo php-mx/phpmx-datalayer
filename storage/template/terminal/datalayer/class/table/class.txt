@@ -1,0 +1,7 @@
+<?php
+
+namespace [#namespace]\Table;
+[#tableComment]
+class Table[#tableClass] extends \[#namespace]\Driver\DriverTable[#tableClass]
+{
+}

@@ -1,0 +1,7 @@
+
+    /** [#tableComment] */
+    static function [#tableMethod](): \[#namespace]\Record\Record[#tableClass]
+    {
+        return self::$[#tableMethod]->getOne(...func_get_args());
+    }
+    

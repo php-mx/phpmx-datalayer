@@ -1,0 +1,31 @@
+<?php
+
+/***************************************************\
+|* Arquivo de driver gerado por PhpMx              *|
+|* ALTERAÇÕES REALIZADAS AQUI SERÃO PERDIDAS       *|
+\***************************************************/
+
+namespace [#namespace]\Driver;
+
+/**
+ * @method \[#namespace]\Record\Record[#tableClass] active Retorna o registro marcado como ativo
+ * @method \[#namespace]\Record\Record[#tableClass][] getAll Retorna um array de registros
+ * @method \[#namespace]\Record\Record[#tableClass] getOne Retorna um registro
+ * @method \[#namespace]\Record\Record[#tableClass] getOneKey Retorna um registro baseando-se em uma idkey
+ * @method \[#namespace]\Record\Record[#tableClass] getNew Retorna um registro novo
+ * @method \[#namespace]\Record\Record[#tableClass] getNull Retorna um registro nulo
+ *
+ * @method \[#namespace]\Record\Record[#tableClass][] _convert Converte um array de consula em um array de objetos de registro
+ */
+abstract class DriverTable[#tableClass] extends \PhpMx\Datalayer\Driver\Table
+{
+    protected $DATALAYER = '[#datalayer]';
+    protected $TABLE = '[#tableName]';
+
+    protected $CLASS_RECORD = '[#namespace]\Record\Record[#tableClass]';
+}
+
+/***************************************************\
+|* Arquivo de driver gerado por PhpMx              *|
+|* ALTERAÇÕES REALIZADAS AQUI SERÃO PERDIDAS       *|
+\***************************************************/

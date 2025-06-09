@@ -1,0 +1,29 @@
+<?php
+
+use PhpMx\Dir;
+use PhpMx\File;
+use PhpMx\Import;
+use PhpMx\Terminal;
+
+return new class extends Terminal {
+
+    function __invoke()
+    {
+        Dir::create('migration');
+        Dir::create('storage/datalayer');
+        Dir::create('storage/datalayer/scheme');
+        Dir::create('storage/datalayer/sqlite');
+
+        $ignore = Import::content('.gitignore');
+
+        if (strpos($ignore, "#phpmx-server") === false) {
+            $ignore .= "\n#phpmx-server";
+            $ignore .= "\n/storage/sqlite";
+            $ignore .= "\n/storage/scheme";
+            $ignore .= "\n/source/Model/*/Driver";
+            $ignore .= "\n";
+        }
+
+        File::create('.gitignore', $ignore, true);
+    }
+};

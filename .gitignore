@@ -1,3 +1,10 @@
 /.env
 /vendor
 /composer.lock
+
+/migration
+
+#phpmx-server
+/storage/sqlite
+/storage/scheme
+/source/Model/*/Driver
