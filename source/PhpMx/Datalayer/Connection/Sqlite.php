@@ -131,8 +131,6 @@ class Sqlite extends Connection
             $insert[] = implode(', ', $innerValues);
         }
 
-        #$query[] = 'PRAGMA foreign_keys=off';
-
         array_push($query, ...$this->schemeQueryDropTable($tableName));
         array_push($query, ...$this->schemeQueryCreateTable($tableName, $comment, ['add' => $newFields]));
 
@@ -146,8 +144,6 @@ class Sqlite extends Connection
                 ]
             );
         }
-
-        #$query[] = 'PRAGMA foreign_keys=on';
 
         array_push($query, ...$this->schemeQueryUpdateTableIndex($tableName, $indexes));
 
