@@ -7,6 +7,6 @@
 #phpmx-core
 /storage/certificate
 
-#phpmx-server
-/storage/datalayer
+#phpmx-datalayer
 /source/Model/*/Driver
+/storage/datalayer

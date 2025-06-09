@@ -16,10 +16,10 @@ return new class extends Terminal {
 
         $ignore = Import::content('.gitignore');
 
-        if (strpos($ignore, "#phpmx-server") === false) {
-            $ignore .= "\n#phpmx-server";
-            $ignore .= "\n/storage/datalayer";
+        if (strpos($ignore, "#phpmx-datalayer") === false) {
+            $ignore .= "\n#phpmx-datalayer";
             $ignore .= "\n/source/Model/*/Driver";
+            $ignore .= "\n/storage/datalayer";
             $ignore .= "\n";
         }
 
