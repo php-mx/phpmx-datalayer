@@ -8,6 +8,5 @@
 /storage/certificate
 
 #phpmx-server
-/storage/sqlite
-/storage/scheme
+/storage/datalayer
 /source/Model/*/Driver

@@ -18,8 +18,7 @@ return new class extends Terminal {
 
         if (strpos($ignore, "#phpmx-server") === false) {
             $ignore .= "\n#phpmx-server";
-            $ignore .= "\n/storage/sqlite";
-            $ignore .= "\n/storage/scheme";
+            $ignore .= "\n/storage/datalayer";
             $ignore .= "\n/source/Model/*/Driver";
             $ignore .= "\n";
         }
