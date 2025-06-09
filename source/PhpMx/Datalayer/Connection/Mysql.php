@@ -17,14 +17,21 @@ class Mysql extends Connection
     protected function load()
     {
         $this->data['host'] = $this->data['host'] ?? env(strtoupper("DB_{$this->dbName}_HOST"));
+        $this->data['port'] = $this->data['port'] ?? env(strtoupper("DB_{$this->dbName}_PORT"));
         $this->data['data'] = $this->data['data'] ?? env(strtoupper("DB_{$this->dbName}_DATA"));
         $this->data['user'] = $this->data['user'] ?? env(strtoupper("DB_{$this->dbName}_USER"));
         $this->data['pass'] = $this->data['pass'] ?? env(strtoupper("DB_{$this->dbName}_PASS"));
 
         $this->data['pass'] = Cif::off($this->data['pass']);
 
+        $dsn = "mysql:host={$this->data['host']}";
+
+        if (!empty($this->data['port'])) $dsn .= ";port={$this->data['port']}";
+
+        $dsn .= ";dbname={$this->data['data']};charset=utf8";
+
         $this->instancePDO = [
-            "mysql:host={$this->data['host']};dbname={$this->data['data']};charset=utf8",
+            $dsn,
             $this->data['user'],
             $this->data['pass']
         ];
