@@ -18,7 +18,6 @@ abstract class Migration
 
     final function execute(string $dbName, bool $mode)
     {
-
         $this->dbName = Datalayer::formatNameToDb($dbName);
 
         $this->scheme = new Scheme($this->dbName);

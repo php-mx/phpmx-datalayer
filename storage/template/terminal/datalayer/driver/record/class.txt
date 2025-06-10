@@ -13,6 +13,8 @@ use PhpMx\Datalayer\Driver\Field as Field;
  */
 abstract class DriverRecord[#tableClass] extends \PhpMx\Datalayer\Driver\Record
 {
+    protected string $DBCLASS = 'db[#datalayerClass]';
+
     protected array $FIELD_REF_NAME = [[#fieldRefName]];
 
     protected string $DATALAYER = '[#datalayer]';

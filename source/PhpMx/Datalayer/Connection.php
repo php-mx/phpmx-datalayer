@@ -74,30 +74,32 @@ abstract class Connection
         if (is_class($query, BaseQuery::class))
             list($query, $data) = $query->query();
 
-        try {
-            $pdoQuery = $this->pdo()->prepare($query);
-            if (!$pdoQuery)
-                throw new Error("[$query]");
+        return log_add('query', '[#]', [$query], function () use ($query, $data) {
+            try {
+                $pdoQuery = $this->pdo()->prepare($query);
+                if (!$pdoQuery)
+                    throw new Error("[$query]");
 
-            if (!$pdoQuery->execute($data)) {
-                $error = $pdoQuery->errorInfo();
-                $error = $error[2] ?? '-undefined-';
-                throw new Error("[$query] [$error]");
+                if (!$pdoQuery->execute($data)) {
+                    $error = $pdoQuery->errorInfo();
+                    $error = $error[2] ?? '-undefined-';
+                    throw new Error("[$query] [$error]");
+                }
+            } catch (Error | Exception | PDOException $e) {
+                throw new Error($e->getMessage());
             }
-        } catch (Error | Exception | PDOException $e) {
-            throw new Error($e->getMessage());
-        }
 
-        $type = explode(' ', $query);
-        $type = array_shift($type);
-        $type = strtolower($type);
+            $type = explode(' ', $query);
+            $type = array_shift($type);
+            $type = strtolower($type);
 
-        return match ($type) {
-            'update', 'delete' => true,
-            'insert' => $this->pdo()->lastInsertId(),
-            'select', 'show', 'pragma' => $pdoQuery->fetchAll(PDO::FETCH_ASSOC),
-            default => $pdoQuery
-        };
+            return match ($type) {
+                'update', 'delete' => true,
+                'insert' => $this->pdo()->lastInsertId(),
+                'select', 'show', 'pragma' => $pdoQuery->fetchAll(PDO::FETCH_ASSOC),
+                default => $pdoQuery
+            };
+        });
     }
 
     /** Executa uma lista de  querys */

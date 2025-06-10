@@ -109,6 +109,7 @@ return new class extends Terminal {
     protected function createDriver_record(string $tableName, array $tableMap): void
     {
         $datalayer = $this->dbName;
+        $datalayerClass = Datalayer::formatNameToClass($this->dbName);
         $tableClass = Datalayer::formatNameToClass($tableName);
         $fieldRefName = [];
 
@@ -206,6 +207,7 @@ return new class extends Terminal {
 
         $data = [
             'datalayer' => $datalayer,
+            'datalayerClass' => $datalayerClass,
             'tableName' => $tableName,
             'tableClass' => $tableClass,
             'autocomplete' => implode("\n * ", $autocomplete),

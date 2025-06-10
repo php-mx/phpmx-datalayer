@@ -13,6 +13,8 @@ use Error;
  */
 abstract class Record
 {
+    protected string $DBCLASS;
+
     protected ?int $ID = null;
     protected array $FIELD = [];
 
@@ -207,14 +209,12 @@ abstract class Record
         if (empty($fields))
             return $this->INITIAL != $this->_arrayInsert();
 
-
         $fields = array_filter($fields, fn($v) => !str_starts_with($v, '_'));
 
         $flipNames = array_flip($this->FIELD_REF_NAME);
 
         $initial = $this->INITIAL;
         $current = $this->_arrayInsert();
-
 
         foreach ($fields as $field) {
             if (isset($flipNames[$field]))
@@ -266,72 +266,83 @@ abstract class Record
     /** Executa o comando parar criar o registro */
     final protected function __runCreate()
     {
-        $this->__runSaveIdx();
-        $onCreate = $this->_onCreate() ?? null;
-        if ($onCreate ?? true) {
-            $this->FIELD['_created']->set(true);
+        log_add("$this->DBCLASS.create", $this->TABLE, [], function () {
+            $this->__runSaveIdx();
+            $onCreate = $this->_onCreate() ?? null;
+            if ($onCreate ?? true) {
+                $this->FIELD['_created']->set(true);
 
-            $this->ID = Query::insert($this->TABLE)
-                ->values($this->_arrayInsert())
-                ->run($this->DATALAYER);
+                $this->ID = Query::insert($this->TABLE)
+                    ->values($this->_arrayInsert())
+                    ->run($this->DATALAYER);
 
-            $drvierClass = Datalayer::formatNameToDriverClass($this->DATALAYER);
-            $tableClass = Datalayer::formatNameToMethod($this->TABLE);
+                $drvierClass = Datalayer::formatNameToDriverClass($this->DATALAYER);
+                $tableClass = Datalayer::formatNameToMethod($this->TABLE);
 
-            $drvierClass::${$tableClass}->__cacheSet($this->ID, $this);
+                $drvierClass::${$tableClass}->__cacheSet($this->ID, $this);
 
-            if (is_callable($onCreate))
-                $onCreate($this);
-        }
+                if (is_callable($onCreate))
+                    $onCreate($this);
+            }
+        });
     }
 
     /** Executa o comando parar atualizar o registro */
     final protected function __runUpdate(bool $forceUpdate)
     {
-        $this->__runSaveIdx();
-        if ($forceUpdate || $this->_checkChange()) {
-            $onUpdate = $this->_onUpdate() ?? null;
-            if ($onUpdate ?? true) {
-                $dif = $this->_arrayInsert();
+        log_add("$this->DBCLASS.update", $this->TABLE, [], function () use ($forceUpdate) {
+            $this->__runSaveIdx();
+            if ($forceUpdate || $this->_checkChange()) {
+                $onUpdate = $this->_onUpdate() ?? null;
+                if ($onUpdate ?? true) {
+                    $dif = $this->_arrayInsert();
 
-                foreach ($dif as $name => $value)
-                    if ($value == $this->INITIAL[$name])
-                        unset($dif[$name]);
+                    foreach ($dif as $name => $value)
+                        if ($value == $this->INITIAL[$name])
+                            unset($dif[$name]);
 
-                $dif['_updated'] = time();
-                $this->FIELD['_updated']->set($dif['_updated']);
+                    $dif['_updated'] = time();
+                    $this->FIELD['_updated']->set($dif['_updated']);
 
-                Query::update($this->TABLE)
-                    ->where('id', $this->ID)
-                    ->values($dif)
-                    ->run($this->DATALAYER);
+                    foreach ($dif as $name => $value)
+                        $this->INITIAL[$name] = $dif[$name];
 
-                if (is_callable($onUpdate))
-                    $onUpdate($this);
+                    Query::update($this->TABLE)
+                        ->where('id', $this->ID)
+                        ->values($dif)
+                        ->run($this->DATALAYER);
+
+                    if (is_callable($onUpdate))
+                        $onUpdate($this);
+                }
+            } else {
+                log_add("$this->DBCLASS.update.saved", 'no registry changes');
             }
-        }
+        });
     }
 
     /** Executa o comando para deletar o registro do banco de dados */
     final protected function __runDelete()
     {
-        $onDelete = $this->_onDelete() ?? null;
-        if ($onDelete ?? true) {
-            Query::delete($this->TABLE)
-                ->where('id', $this->ID)
-                ->run($this->DATALAYER);
+        log_add("$this->DBCLASS.delete", $this->TABLE, [], function () {
+            $onDelete = $this->_onDelete() ?? null;
+            if ($onDelete ?? true) {
+                Query::delete($this->TABLE)
+                    ->where('id', $this->ID)
+                    ->run($this->DATALAYER);
 
-            $oldId = $this->ID;
-            $this->ID = null;
+                $oldId = $this->ID;
+                $this->ID = null;
 
-            $drvierClass = Datalayer::formatNameToDriverClass($this->DATALAYER);
-            $tableClass = Datalayer::formatNameToMethod($this->TABLE);
+                $drvierClass = Datalayer::formatNameToDriverClass($this->DATALAYER);
+                $tableClass = Datalayer::formatNameToMethod($this->TABLE);
 
-            $drvierClass::${$tableClass}->__cacheRemove($oldId);
+                $drvierClass::${$tableClass}->__cacheRemove($oldId);
 
-            if (is_callable($onDelete))
-                $onDelete($this);
-        }
+                if (is_callable($onDelete))
+                    $onDelete($this);
+            }
+        });
     }
 
     final function __get($name)
