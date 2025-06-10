@@ -32,23 +32,24 @@ abstract class Datalayer
     static function register(string $dbName, array $data = []): void
     {
         $dbName = self::formatNameToDb($dbName);
+        log_add('datalayer', 'register [#]', [$dbName], function () use ($dbName, $data) {
+            $data['type'] = $data['type'] ?? env(strtoupper("DB_" . $dbName . "_TYPE"));
 
-        $data['type'] = $data['type'] ?? env(strtoupper("DB_" . $dbName . "_TYPE"));
+            if (!$data['type'])
+                throw new Error("datalayer type required to [$dbName]");
 
-        if (!$data['type'])
-            throw new Error("datalayer type required to [$dbName]");
+            $type = strtoupper($data['type']);
 
-        $type = strtoupper($data['type']);
+            if (!isset(self::$type[$type]))
+                throw new Error("connection type [$type] not found");
 
-        if (!isset(self::$type[$type]))
-            throw new Error("connection type [$type] not found");
+            $connection = self::$type[$type];
 
-        $connection = self::$type[$type];
+            if (!class_exists($connection))
+                throw new Error("connection class [$connection] not found");
 
-        if (!class_exists($connection))
-            throw new Error("connection class [$connection] not found");
-
-        self::$instance[$dbName] = new $connection($dbName, $data);
+            self::$instance[$dbName] = new $connection($dbName, $data);
+        });
     }
 
     #==| Tools |==#
