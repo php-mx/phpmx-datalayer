@@ -3,6 +3,7 @@
 /composer.lock
 
 /migration
+/source/Model
 
 #phpmx-core
 /storage/certificate
