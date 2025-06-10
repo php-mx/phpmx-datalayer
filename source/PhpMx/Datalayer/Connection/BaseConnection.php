@@ -1,14 +1,15 @@
 <?php
 
-namespace PhpMx\Datalayer;
+namespace PhpMx\Datalayer\Connection;
 
-use PhpMx\Datalayer\Query\BaseQuery;
 use Error;
 use Exception;
 use PDO;
 use PDOException;
+use PhpMx\Datalayer\Query;
+use PhpMx\Datalayer\Query\BaseQuery;
 
-abstract class Connection
+abstract class BaseConnection
 {
     protected string $dbName;
 
@@ -43,7 +44,7 @@ abstract class Connection
         $this->load();
         foreach ($this->data as $var => $value)
             if (is_null($value))
-                throw new Error("parameter [$var] required in [{$this->data['type']}] datalayer");
+                throw new Exception("parameter [$var] required in [{$this->data['type']}] datalayer");
     }
 
     /** Retorna uma configuração armazenada no banco */
@@ -74,19 +75,19 @@ abstract class Connection
         if (is_class($query, BaseQuery::class))
             list($query, $data) = $query->query();
 
-        return log_add('query', '[#]', [$query], function () use ($query, $data) {
+        return log_add('db.query', $query, [], function () use ($query, $data) {
             try {
                 $pdoQuery = $this->pdo()->prepare($query);
                 if (!$pdoQuery)
-                    throw new Error("[$query]");
+                    throw new Exception("[$query]");
 
                 if (!$pdoQuery->execute($data)) {
                     $error = $pdoQuery->errorInfo();
                     $error = $error[2] ?? '-undefined-';
-                    throw new Error("[$query] [$error]");
+                    throw new Exception("[$query] [$error]");
                 }
             } catch (Error | Exception | PDOException $e) {
-                throw new Error($e->getMessage());
+                throw new Exception($e->getMessage());
             }
 
             $type = explode(' ', $query);

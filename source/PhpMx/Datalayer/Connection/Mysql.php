@@ -2,36 +2,31 @@
 
 namespace PhpMx\Datalayer\Connection;
 
-use PhpMx\Cif;
-use PhpMx\Datalayer\Connection;
-use PhpMx\Datalayer\Query;
 use Error;
 use Exception;
 use PDO;
 use PDOException;
+use PhpMx\Cif;
+use PhpMx\Datalayer\Query;
 use PhpMx\Prepare;
 
-class Mysql extends Connection
+class Mysql extends BaseConnection
 {
     /** Inicializa a conexão */
     protected function load()
     {
-        $this->data['host'] = $this->data['host'] ?? env(strtoupper("DB_{$this->dbName}_HOST"));
-        $this->data['port'] = $this->data['port'] ?? env(strtoupper("DB_{$this->dbName}_PORT"));
-        $this->data['data'] = $this->data['data'] ?? env(strtoupper("DB_{$this->dbName}_DATA"));
-        $this->data['user'] = $this->data['user'] ?? env(strtoupper("DB_{$this->dbName}_USER"));
-        $this->data['pass'] = $this->data['pass'] ?? env(strtoupper("DB_{$this->dbName}_PASS"));
+        $envName = strToSnakeCase($this->dbName);
+        $envName = strtoupper($envName);
+
+        $this->data['host'] = $this->data['host'] ?? env("DB_{$envName}_HOST");
+        $this->data['data'] = $this->data['data'] ?? env("DB_{$envName}_DATA");
+        $this->data['user'] = $this->data['user'] ?? env("DB_{$envName}_USER");
+        $this->data['pass'] = $this->data['pass'] ?? env("DB_{$envName}_PASS");
 
         $this->data['pass'] = Cif::off($this->data['pass']);
 
-        $dsn = "mysql:host={$this->data['host']}";
-
-        if (!empty($this->data['port'])) $dsn .= ";port={$this->data['port']}";
-
-        $dsn .= ";dbname={$this->data['data']};charset=utf8";
-
         $this->instancePDO = [
-            $dsn,
+            "mysql:host={$this->data['host']};dbname={$this->data['data']};charset=utf8",
             $this->data['user'],
             $this->data['pass']
         ];
@@ -41,11 +36,13 @@ class Mysql extends Connection
     protected function pdo(): PDO
     {
         if (is_array($this->instancePDO)) {
-            try {
-                $this->instancePDO = new PDO(...$this->instancePDO);
-            } catch (Error | Exception | PDOException $e) {
-                throw new Error($e->getMessage());
-            }
+            log_add('db.start', 'Db[#] mysql', [strToPascalCase($this->dbName)], function () {
+                try {
+                    $this->instancePDO = new PDO(...$this->instancePDO);
+                } catch (Error | Exception | PDOException $e) {
+                    throw new Exception($e->getMessage());
+                }
+            });
         }
         return $this->instancePDO;
     }

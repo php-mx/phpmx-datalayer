@@ -1,1 +1,0 @@
-        $this->FIELD['[#fieldMethod]'] = (new Field\F[#fieldType]([#fieldUseNull],[#fieldValue]))[#fieldExtras];

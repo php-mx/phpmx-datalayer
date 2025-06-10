@@ -9,5 +9,4 @@
 /storage/certificate
 
 #phpmx-datalayer
-/source/Model/*/Driver
-/storage/datalayer
+/storage/sqlite

@@ -10,16 +10,12 @@ return new class extends Terminal {
     function __invoke()
     {
         Dir::create('migration');
-        Dir::create('storage/datalayer');
-        Dir::create('storage/datalayer/scheme');
-        Dir::create('storage/datalayer/sqlite');
 
         $ignore = Import::content('.gitignore');
 
         if (strpos($ignore, "#phpmx-datalayer") === false) {
             $ignore .= "\n#phpmx-datalayer";
-            $ignore .= "\n/source/Model/*/Driver";
-            $ignore .= "\n/storage/datalayer";
+            $ignore .= "\n/storage/sqlite";
             $ignore .= "\n";
         }
 

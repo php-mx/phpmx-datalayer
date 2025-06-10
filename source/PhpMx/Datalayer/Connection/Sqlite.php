@@ -2,26 +2,46 @@
 
 namespace PhpMx\Datalayer\Connection;
 
-use PhpMx\Datalayer\Connection;
-use PhpMx\Datalayer\Query;
-use PhpMx\Dir;
-use PhpMx\File;
 use Error;
 use Exception;
 use PDO;
 use PDOException;
+use PhpMx\Datalayer\Query;
+use PhpMx\Dir;
+use PhpMx\File;
 use PhpMx\Prepare;
 
-class Sqlite extends Connection
+class Sqlite extends BaseConnection
 {
     /** Inicializa a conexão */
     protected function load()
     {
-        $file = $this->data['file'] ?? env(strtoupper("DB_{$this->dbName}_FILE"), $this->dbName);
+        $envName = strToSnakeCase($this->dbName);
+        $envName = strtoupper($envName);
 
-        $file = File::setEx($file, 'sqlite');
+        $file = $this->data['file'] ?? env(strtoupper("DB_{$envName}_FILE")) ?? $this->dbName;
 
-        $this->data['file'] = path('storage/datalayer/sqlite', $file);
+        if (!str_starts_with($file, '.')) $file = "storage/sqlite/$file";
+
+        $file = trim($file, '.');
+        $file = path($file);
+
+        $path = explode('/', $file);
+        $file = array_pop($path);
+        $path = path(...$path);
+
+        $ex = File::getEx($file);
+        $ex = match ($ex) {
+            'sqlite', 'sqlite3', 'db', 'db3', 'sl3', 's3db', => $ex,
+            default => null,
+        };
+
+        $file = $ex ? substr($file, 0, strlen($ex) * -1) : $file;
+        $file = strToCamelCase($file);
+        $file = File::setEx($file, $ex ?? 'sqlite');
+        $file = path($path, $file);
+
+        $this->data['file'] = path($file);
 
         $this->instancePDO = ["sqlite:" . $this->data['file']];
     }
@@ -30,12 +50,14 @@ class Sqlite extends Connection
     protected function pdo(): PDO
     {
         if (is_array($this->instancePDO)) {
-            try {
-                Dir::create($this->data['file']);
-                $this->instancePDO = new PDO(...(array) $this->instancePDO);
-            } catch (Error | Exception | PDOException $e) {
-                throw new Error($e->getMessage());
-            }
+            log_add('db.start', 'Db[#] sqlite', [strToPascalCase($this->dbName)], function () {
+                try {
+                    if (!File::check($this->data['file'])) Dir::create($this->data['file']);
+                    $this->instancePDO = new PDO(...(array) $this->instancePDO);
+                } catch (Error | Exception | PDOException $e) {
+                    throw new Exception($e->getMessage());
+                }
+            });
         }
         return $this->instancePDO;
     }
