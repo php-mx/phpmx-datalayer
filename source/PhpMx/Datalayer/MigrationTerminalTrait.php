@@ -84,6 +84,15 @@ trait MigrationTerminalTrait
         return array_pop($executed) ?? 0;
     }
 
+    /** Retorna array com todos os IDs aplicados */
+    protected static function getAppliedMigrations(): array
+    {
+        $datalayer = Datalayer::get(self::$dbName);
+        $executed = $datalayer->getConfig('__migration');
+
+        return is_json($executed) ? json_decode($executed, true) : [];
+    }
+
     /** Executa um arquivo de migration */
     protected static function executeMigration(string $file, bool $mode)
     {
@@ -104,22 +113,20 @@ trait MigrationTerminalTrait
         });
     }
 
-    /** Executa o proximo arquivo da lista de migration */
     protected static function executeNext(): bool
     {
         $files = self::getFiles();
-
-        $lasId = self::lastId();
+        $applied = self::getAppliedMigrations();
 
         foreach ($files as $id => $file) {
-            if ($id > $lasId) {
+            if (!in_array($id, $applied)) {
                 self::executeMigration($file, true);
                 self::lastId($id);
                 return true;
             }
         }
 
-        return  false;
+        return false;
     }
 
     /** Reverte o ultimo arquivo executado da lista de migration */
