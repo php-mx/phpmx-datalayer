@@ -10,4 +10,4 @@
 
 #phpmx-datalayer
 /storage/sqlite
-/storage/scheme/db
+/storage/scheme/db*

@@ -15,7 +15,8 @@ return new class extends Terminal {
 
         $tables = $tables == '*' ? array_keys($map) : explode(',', $tables);
 
-        $file = "storage/scheme/db/$dbName/data.json";
+        $schemePathName = strToCamelCase("db $dbName");
+        $file = "storage/scheme/$schemePathName/data.json";
 
         self::echo("Starting export from [$dbName] to [$file]");
         self::echoLine();

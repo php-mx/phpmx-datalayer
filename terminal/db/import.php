@@ -11,7 +11,8 @@ return new class extends Terminal {
     {
         $dbName = Datalayer::internalName($dbName);
 
-        $file = "storage/scheme/db/$dbName/data.json";
+        $schemePathName = strToCamelCase("db $dbName");
+        $file = "storage/scheme/$schemePathName/data.json";
 
         $import = Json::import($file);
 
