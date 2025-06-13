@@ -2,7 +2,6 @@
 
 namespace PhpMx\Datalayer\Driver;
 
-use PhpMx\Datalayer;
 use PhpMx\Datalayer\Query;
 use PhpMx\Datalayer\Driver\Field\FIdx;
 use PhpMx\Datalayer\Driver\Field\FTime;
