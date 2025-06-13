@@ -75,7 +75,7 @@ abstract class BaseConnection
         if (is_class($query, BaseQuery::class))
             list($query, $data) = $query->query();
 
-        return log_add('db.query', $query, [], function () use ($query, $data) {
+        return log_add('datalayer.query', $query, [], function () use ($query, $data) {
             try {
                 $pdoQuery = $this->pdo()->prepare($query);
                 if (!$pdoQuery)

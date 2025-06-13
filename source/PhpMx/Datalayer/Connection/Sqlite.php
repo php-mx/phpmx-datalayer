@@ -50,7 +50,7 @@ class Sqlite extends BaseConnection
     protected function pdo(): PDO
     {
         if (is_array($this->instancePDO)) {
-            log_add('db.start', '[#] sqlite', [Datalayer::externalName($this->dbName, 'Db')], function () {
+            log_add('datalayer.start', '[#] sqlite', [Datalayer::externalName($this->dbName, 'Db')], function () {
                 try {
                     if (!File::check($this->data['file'])) Dir::create($this->data['file']);
                     $this->instancePDO = new PDO(...(array) $this->instancePDO);

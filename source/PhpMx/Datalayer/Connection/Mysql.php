@@ -36,7 +36,7 @@ class Mysql extends BaseConnection
     protected function pdo(): PDO
     {
         if (is_array($this->instancePDO)) {
-            log_add('db.start', '[#] mysql', [Datalayer::externalName($this->dbName, 'Db')], function () {
+            log_add('datalayer.start', '[#] mysql', [Datalayer::externalName($this->dbName, 'Db')], function () {
                 try {
                     $this->instancePDO = new PDO(...$this->instancePDO);
                 } catch (Error | Exception | PDOException $e) {
