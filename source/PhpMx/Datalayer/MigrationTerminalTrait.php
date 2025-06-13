@@ -87,16 +87,21 @@ trait MigrationTerminalTrait
     /** Executa um arquivo de migration */
     protected static function executeMigration(string $file, bool $mode)
     {
-        Terminal::echo("[#action] migration [#file]", [
-            'action' => $mode ? 'Aplicando' : 'Revertendo',
-            'file' => File::getOnly($file),
-        ]);
+        $logAction = $mode ? 'up' : 'down';
+        $logDdName = Datalayer::externalName(self::$dbName, 'db');
 
-        $class = substr($file, 6, -4);
-        $class = str_replace_all("/", "\\", $class);
+        log_add("migration.$logAction", '[#] [[#]]', [$logDdName, $file,], function () use ($file, $mode) {
+            Terminal::echo("[#action] migration [#file]", [
+                'action' => $mode ? 'Aplicando' : 'Revertendo',
+                'file' => File::getOnly($file),
+            ]);
 
-        $migration = Import::return($file);
-        $migration->execute(self::$dbName, $mode);
+            $class = substr($file, 6, -4);
+            $class = str_replace_all("/", "\\", $class);
+
+            $migration = Import::return($file);
+            $migration->execute(self::$dbName, $mode);
+        });
     }
 
     /** Executa o proximo arquivo da lista de migration */
