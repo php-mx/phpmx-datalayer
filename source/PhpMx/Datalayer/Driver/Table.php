@@ -45,8 +45,14 @@ abstract class Table
     /** Retorna o registro marcado como ativo */
     final function active($make = null)
     {
-        if (func_num_args())
-            $this->ACTIVE = is_class($make, $this->CLASS_RECORD) ? $make : $this->getOne(...func_get_args());
+        if (func_num_args()) {
+            $make = is_class($make, $this->CLASS_RECORD) ? $make : $this->getOne(...func_get_args());
+            $this->ACTIVE = log_add('driver.make.active', '[#].[#]([#])', [
+                strToPascalCase("db $this->DATALAYER"),
+                strToCamelCase($this->TABLE),
+                str_get_var($make->id())
+            ], fn() => $make);
+        }
 
         return $this->ACTIVE ?? $this->getNull();
     }
@@ -88,10 +94,20 @@ abstract class Table
             return $this->active();
 
         if ($this->typeQuery(...$args) == 2 && $this->inCache($args[0]))
-            return $this->recordCache(['id' => $args[0]]);
+            return log_add('driver.select.ignored', '[#].[#]([#]) has already been loaded', [
+                strToPascalCase("db $this->DATALAYER"),
+                strToCamelCase($this->TABLE),
+                $args[0]
+            ], fn() => $this->recordCache(['id' => $args[0]]));
 
-        $query = $this->autoQuery(...$args)->limit(1);
-        $result = $query->run();
+        $result = log_add('driver.select', '[#]', [[
+            'unknown',
+            'by query',
+            'by id',
+            'by where provided',
+            'by dynamic where informed via array',
+            'by custom select'
+        ][$this->typeQuery(...$args)]], fn() => $this->autoQuery(...$args)->limit(1)->run());
 
         return empty($result) ? $this->getNull() : $this->arrayToRecord(array_shift($result));
     }
