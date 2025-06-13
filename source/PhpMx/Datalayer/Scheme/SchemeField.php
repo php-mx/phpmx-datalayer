@@ -13,7 +13,7 @@ class SchemeField
 
     function __construct(string $name, array $map = [], ?array $realMap = null)
     {
-        $name = Datalayer::internalName($name);
+        $name = str_starts_with($name, '=') ? substr($name, 1) : Datalayer::internalName($name);
 
         $realMap = $realMap ?? SchemeMap::FIELD_MAP;
 
