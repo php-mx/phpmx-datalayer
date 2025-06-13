@@ -7,6 +7,7 @@ use Exception;
 use PDO;
 use PDOException;
 use PhpMx\Cif;
+use PhpMx\Datalayer;
 use PhpMx\Datalayer\Query;
 use PhpMx\Prepare;
 
@@ -15,8 +16,7 @@ class Mysql extends BaseConnection
     /** Inicializa a conexão */
     protected function load()
     {
-        $envName = strToSnakeCase($this->dbName);
-        $envName = strtoupper($envName);
+        $envName = strtoupper($this->dbName);
 
         $this->data['host'] = $this->data['host'] ?? env("DB_{$envName}_HOST");
         $this->data['data'] = $this->data['data'] ?? env("DB_{$envName}_DATA");
@@ -36,7 +36,7 @@ class Mysql extends BaseConnection
     protected function pdo(): PDO
     {
         if (is_array($this->instancePDO)) {
-            log_add('db.start', 'Db[#] mysql', [strToPascalCase($this->dbName)], function () {
+            log_add('db.start', '[#] mysql', [Datalayer::externalName($this->dbName, 'Db')], function () {
                 try {
                     $this->instancePDO = new PDO(...$this->instancePDO);
                 } catch (Error | Exception | PDOException $e) {

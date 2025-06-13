@@ -16,6 +16,7 @@ return new class extends Terminal {
         if (strpos($ignore, "#phpmx-datalayer") === false) {
             $ignore .= "\n#phpmx-datalayer";
             $ignore .= "\n/storage/sqlite";
+            $ignore .= "\n/storage/scheme/db";
             $ignore .= "\n";
         }
 

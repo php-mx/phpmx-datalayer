@@ -20,7 +20,7 @@ abstract class Datalayer
     /** Retorna um objeto datalayer */
     static function &get(string $dbName): BaseConnection
     {
-        $dbName = strToCamelCase($dbName);
+        $dbName = self::internalName($dbName);
 
         if (!isset(self::$instance[$dbName]))
             self::register($dbName);
@@ -31,11 +31,10 @@ abstract class Datalayer
     /** Registra um datalayer */
     static function register(string $dbName, array $data = []): void
     {
-        $dbName = strToCamelCase($dbName);
+        $dbName = self::internalName($dbName);
 
-        log_add('db.register', 'Db[#]', [strToPascalCase($dbName)], function () use ($dbName, $data) {
-            $envName = strToSnakeCase($dbName);
-            $envName = strtoupper($envName);
+        log_add('db.register', '[#]', [self::externalName($dbName, 'Db')], function () use ($dbName, $data) {
+            $envName = strtoupper($dbName);
 
             $data['type'] = $data['type'] ?? env("DB_{$envName}_TYPE");
 
@@ -54,5 +53,20 @@ abstract class Datalayer
 
             self::$instance[$dbName] = new $connection($dbName, $data);
         });
+    }
+
+    /** Converte um nome para uso no banco de dados  */
+    static function internalName(string $name): string
+    {
+        $name = self::externalName($name);
+        $name = strToSnakeCase($name);
+        return $name;
+    }
+
+    /** Converte um nome para uso no codigo  */
+    static function externalName(string $name, ?string $prefix = null): string
+    {
+        $name = strToCamelCase("$prefix $name");
+        return $name;
     }
 }

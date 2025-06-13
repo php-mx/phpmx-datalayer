@@ -6,6 +6,7 @@ use Error;
 use Exception;
 use PDO;
 use PDOException;
+use PhpMx\Datalayer;
 use PhpMx\Datalayer\Query;
 use PhpMx\Dir;
 use PhpMx\File;
@@ -16,10 +17,9 @@ class Sqlite extends BaseConnection
     /** Inicializa a conexão */
     protected function load()
     {
-        $envName = strToSnakeCase($this->dbName);
-        $envName = strtoupper($envName);
+        $envName = strtoupper($this->dbName);
 
-        $file = $this->data['file'] ?? env(strtoupper("DB_{$envName}_FILE")) ?? $this->dbName;
+        $file = $this->data['file'] ?? env("DB_{$envName}_FILE") ?? $this->dbName;
 
         if (!str_starts_with($file, '.')) $file = "storage/sqlite/$file";
 
@@ -50,7 +50,7 @@ class Sqlite extends BaseConnection
     protected function pdo(): PDO
     {
         if (is_array($this->instancePDO)) {
-            log_add('db.start', 'Db[#] sqlite', [strToPascalCase($this->dbName)], function () {
+            log_add('db.start', '[#] sqlite', [Datalayer::externalName($this->dbName, 'Db')], function () {
                 try {
                     if (!File::check($this->data['file'])) Dir::create($this->data['file']);
                     $this->instancePDO = new PDO(...(array) $this->instancePDO);
