@@ -1,0 +1,3 @@
+
+ * @property \[#fieldNamespace]\Record\[#fieldRecordClass] $[#fieldMethod] [#fieldComment]
+ * @method $this|[#fieldPhpType] [#fieldMethod]() [#fieldComment]

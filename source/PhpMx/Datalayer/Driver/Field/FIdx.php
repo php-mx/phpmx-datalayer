@@ -23,16 +23,15 @@ class FIdx extends Field
                 $value = null;
         } else if (is_bool($value)) {
             if ($value) {
-                $drvierClass = Datalayer::formatNameToDriverClass($this->DATALAYER);
-                $tableMethod = Datalayer::formatNameToMethod($this->TABLE);
+                $drvierClass = 'Model\\' . strToPascalCase("db $this->DATALAYER") . '\\' . strToPascalCase("db $this->DATALAYER");
+                $tableMethod = strToCamelCase($this->TABLE);
                 $value = $drvierClass::${$tableMethod}->active()->id();
             } else {
                 $value = null;
             }
         } else {
-            $driverNamespace = Datalayer::formatNameToDriverNamespace($this->DATALAYER);
-            $tableClass = Datalayer::formatNameToClass($this->TABLE);
-            $driverRecordClass =  "$driverNamespace\Driver\DriverRecord$tableClass";
+            $driverNamespace = 'Model\\' . strToPascalCase("db $this->DATALAYER");
+            $driverRecordClass = "$driverNamespace\Driver\\" . strToPascalCase("driver record $this->TABLE");
             if (is_extend($value, $driverRecordClass)) {
                 $value = $value->id();
             } else {
@@ -74,8 +73,8 @@ class FIdx extends Field
     function _record(): Record
     {
         if (!$this->_checkLoad()) {
-            $drvierClass = Datalayer::formatNameToDriverClass($this->DATALAYER);
-            $tableMethod = Datalayer::formatNameToMethod($this->TABLE);
+            $drvierClass = 'Model\\' . strToPascalCase("db $this->DATALAYER") . '\\' . strToPascalCase("db $this->DATALAYER");
+            $tableMethod = strToCamelCase($this->TABLE);
             $this->RECORD = $drvierClass::${$tableMethod}->getOne($this->get());
         }
 
@@ -99,9 +98,8 @@ class FIdx extends Field
     /** Retorna a chave de identificação cifrada */
     function idKey(): string
     {
-        $drvierClass = Datalayer::formatNameToDriverClass($this->DATALAYER);
-        $tableMethod = Datalayer::formatNameToMethod($this->TABLE);
-
+        $drvierClass = 'Model\\' . strToPascalCase("db $this->DATALAYER") . '\\' . strToPascalCase("db $this->DATALAYER");
+        $tableMethod = strToCamelCase($this->TABLE);
         return $drvierClass::${$tableMethod}->idToIdkey($this->get());
     }
 

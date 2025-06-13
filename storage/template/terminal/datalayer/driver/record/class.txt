@@ -1,0 +1,29 @@
+<?php
+
+/***************************************************\
+|* Arquivo de driver gerado por PhpMx              *|
+|* ALTERAÇÕES REALIZADAS AQUI SERÃO PERDIDAS       *|
+\***************************************************/
+
+namespace [#namespace]\Driver;
+
+/**[#autocomplete]
+ */
+abstract class Driver[#recordClass] extends \PhpMx\Datalayer\Driver\Record
+{
+    protected array $FIELD_REF_NAME = [[#fieldRefName]];
+
+    protected string $DATALAYER = '[#datalayer]';
+    protected string $TABLE = '[#tableName]';
+
+    final function __construct(mixed $scheme = null)
+    {
+[#createFields]
+        parent::__construct($scheme);
+    }
+}
+
+/***************************************************\
+|* Arquivo de driver gerado por PhpMx              *|
+|* ALTERAÇÕES REALIZADAS AQUI SERÃO PERDIDAS       *|
+\***************************************************/
