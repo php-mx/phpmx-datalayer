@@ -20,7 +20,7 @@ abstract class Datalayer
     /** Retorna um objeto datalayer */
     static function &get(string $dbName): BaseConnection
     {
-        $dbName = strToSnakeCase($dbName);
+        $dbName = strToCamelCase($dbName);
 
         if (!isset(self::$instance[$dbName]))
             self::register($dbName);
@@ -31,7 +31,7 @@ abstract class Datalayer
     /** Registra um datalayer */
     static function register(string $dbName, array $data = []): void
     {
-        $dbName = strToSnakeCase($dbName);
+        $dbName = strToCamelCase($dbName);
 
         log_add('db.register', 'Db[#]', [strToPascalCase($dbName)], function () use ($dbName, $data) {
             $envName = strToSnakeCase($dbName);
