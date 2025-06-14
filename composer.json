@@ -19,8 +19,10 @@
         ]
     },
     "require": {
-        "phpmx/core": "dev-main",
         "ext-pdo_mysql": "*",
-        "ext-pdo_sqlite": "*"
+        "ext-pdo_sqlite": "*",
+        "phpmx/core": "dev-main",
+        "phpmx/cif": "dev-main",
+        "phpmx/code": "dev-main"
     }
 }

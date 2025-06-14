@@ -5,7 +5,7 @@
 /migration
 /source/Model
 
-#phpmx-core
+#phpmx-cif
 /storage/certificate
 
 #phpmx-datalayer
