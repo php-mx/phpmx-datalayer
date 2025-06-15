@@ -38,10 +38,70 @@ abstract class Migration
         return $returnTable;
     }
 
+    /** Retorna um objeto campo do tipo Boolean */
+    function f_boolean(string $name, ?string $comment = null): SchemeField
+    {
+        return new SchemeField($name, ['type' => 'boolean', 'comment' => $comment]);
+    }
+
+    /** Retorna um objeto campo do tipo Hash Code */
+    function f_code(string $name, ?string $comment = null): SchemeField
+    {
+        return new SchemeField($name, ['type' => 'code', 'comment' => $comment]);
+    }
+
+    /** Retorna um objeto campo do tipo Config */
+    function f_config(string $name, ?string $comment = null): SchemeField
+    {
+        return new SchemeField($name, ['type' => 'config', 'comment' => $comment]);
+    }
+
+    /** Retorna um objeto campo do tipo Email */
+    function f_email(string $name, ?string $comment = null): SchemeField
+    {
+        return new SchemeField($name, ['type' => 'email', 'comment' => $comment]);
+    }
+
+    /** Retorna um objeto campo do tipo Float */
+    function f_float(string $name, ?string $comment = null): SchemeField
+    {
+        return new SchemeField($name, ['type' => 'float', 'comment' => $comment]);
+    }
+
+    /** Retorna um objeto campo do tipo Hash Md5 */
+    function f_hash(string $name, ?string $comment = null): SchemeField
+    {
+        return new SchemeField($name, ['type' => 'hash', 'comment' => $comment]);
+    }
+
+    /** Retorna um objeto campo do tipo IDs */
+    function f_ids(string $name, ?string $comment = null): SchemeField
+    {
+        return new SchemeField($name, ['type' => 'ids', 'comment' => $comment, 'config' => ['dbName' => $this->dbName, 'table' => $name]]);
+    }
+
+    /** Retorna um objeto campo do tipo Idx */
+    function f_idx(string $name, ?string $comment = null): SchemeField
+    {
+        return new SchemeField($name, ['type' => 'idx', 'comment' => $comment, 'config' => ['dbName' => $this->dbName, 'table' => $name]]);
+    }
+
     /** Retorna um objeto campo do tipo Int */
     function f_int(string $name, ?string $comment = null): SchemeField
     {
         return new SchemeField($name, ['type' => 'int', 'comment' => $comment]);
+    }
+
+    /** Retorna um objeto campo do tipo Json */
+    function f_json(string $name, ?string $comment = null): SchemeField
+    {
+        return new SchemeField($name, ['type' => 'json', 'comment' => $comment]);
+    }
+
+    /** Retorna um objeto campo do tipo Log */
+    function f_log(string $name, ?string $comment = null): SchemeField
+    {
+        return new SchemeField($name, ['type' => 'log', 'comment' => $comment]);
     }
 
     /** Retorna um objeto campo do tipo String */
@@ -54,66 +114,6 @@ abstract class Migration
     function f_text(string $name, ?string $comment = null): SchemeField
     {
         return new SchemeField($name, ['type' => 'text', 'comment' => $comment]);
-    }
-
-    /** Retorna um objeto campo do tipo Json */
-    function f_json(string $name, ?string $comment = null): SchemeField
-    {
-        return new SchemeField($name, ['type' => 'json', 'comment' => $comment]);
-    }
-
-    /** Retorna um objeto campo do tipo Float */
-    function f_float(string $name, ?string $comment = null): SchemeField
-    {
-        return new SchemeField($name, ['type' => 'float', 'comment' => $comment]);
-    }
-
-    /** Retorna um objeto campo do tipo Idx */
-    function f_idx(string $name, ?string $comment = null): SchemeField
-    {
-        return new SchemeField($name, ['type' => 'idx', 'comment' => $comment, 'config' => ['dbName' => $this->dbName, 'table' => $name]]);
-    }
-
-    /** Retorna um objeto campo do tipo IDs */
-    function f_ids(string $name, ?string $comment = null): SchemeField
-    {
-        return new SchemeField($name, ['type' => 'ids', 'comment' => $comment, 'config' => ['dbName' => $this->dbName, 'table' => $name]]);
-    }
-
-    /** Retorna um objeto campo do tipo Boolean */
-    function f_boolean(string $name, ?string $comment = null): SchemeField
-    {
-        return new SchemeField($name, ['type' => 'boolean', 'comment' => $comment]);
-    }
-
-    /** Retorna um objeto campo do tipo Email */
-    function f_email(string $name, ?string $comment = null): SchemeField
-    {
-        return new SchemeField($name, ['type' => 'email', 'comment' => $comment]);
-    }
-
-    /** Retorna um objeto campo do tipo Hash Md5 */
-    function f_hash(string $name, ?string $comment = null): SchemeField
-    {
-        return new SchemeField($name, ['type' => 'hash', 'comment' => $comment]);
-    }
-
-    /** Retorna um objeto campo do tipo Hash Code */
-    function f_code(string $name, ?string $comment = null): SchemeField
-    {
-        return new SchemeField($name, ['type' => 'code', 'comment' => $comment]);
-    }
-
-    /** Retorna um objeto campo do tipo Log */
-    function f_log(string $name, ?string $comment = null): SchemeField
-    {
-        return new SchemeField($name, ['type' => 'log', 'comment' => $comment]);
-    }
-
-    /** Retorna um objeto campo do tipo Config */
-    function f_config(string $name, ?string $comment = null): SchemeField
-    {
-        return new SchemeField($name, ['type' => 'config', 'comment' => $comment]);
     }
 
     /** Retorna um objeto campo do tipo Time */

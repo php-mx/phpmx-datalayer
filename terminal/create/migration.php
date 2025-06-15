@@ -8,18 +8,22 @@ use PhpMx\Terminal;
 
 return new class extends Terminal {
 
-    function __invoke($migrationRef = '')
+    function __invoke($migrationName)
     {
-        $migrationRef = explode('.', $migrationRef);
+        $migrationRef = explode('.', $migrationName);
 
         $migrationName = array_pop($migrationRef) ?? '';
         $migrationDbName = array_pop($migrationRef) ?? 'main';
 
         $migrationDbName = strToCamelCase($migrationDbName);
 
-        $time = time();
+        usleep(1);
+        $time = microtime(true);
+        $time = str_replace('.', '', $time);
+        $time = str_pad($time, 14, '0');
+        $time = $time . str_pad(random_int(0, 999), 3, '0', STR_PAD_LEFT);
 
-        $migrationName = $migrationName ? $time . "_" . $migrationName : $time;
+        $migrationName = $migrationName ? strToSnakeCase("$time $migrationName") : $time;
 
         $pathRef = func_get_args();
         array_shift($pathRef);

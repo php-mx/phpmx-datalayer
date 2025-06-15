@@ -7,6 +7,7 @@ use PhpMx\Datalayer;
 use PhpMx\Dir;
 use PhpMx\File;
 use PhpMx\Import;
+use PhpMx\Path;
 use PhpMx\Terminal;
 
 trait MigrationTerminalTrait
@@ -52,11 +53,15 @@ trait MigrationTerminalTrait
     {
         $files = [];
 
-        foreach (Dir::seekForFile(self::$path, true) as $file)
-            if (substr($file, -4) == '.php') {
-                $fileName = File::getName($file);
-                $files[substr($fileName, 0, 10)] = self::$path . "/$file";
-            }
+        $paths = Path::seekDirs(self::$path);
+
+        foreach ($paths as $path) {
+            foreach (Dir::seekForFile($path, true) as $file)
+                if (substr($file, -4) == '.php') {
+                    $fileName = File::getName($file);
+                    $files[substr($fileName, 0, 17)] = path($path, $file);
+                }
+        }
 
         ksort($files);
 
