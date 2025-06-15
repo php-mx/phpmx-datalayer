@@ -21,9 +21,9 @@ class SchemeField
         $map['size'] = $map['size'] ?? $realMap['size'];
         $map['null'] = $map['null'] ?? $realMap['null'];
         $map['index'] = $map['index'] ?? $realMap['index'];
-        $map['config'] = $map['config'] ?? $realMap['config'];
         $map['comment'] = $map['comment'] ?? $realMap['comment'];
         $map['default'] = $map['default'] ?? $realMap['default'];
+        $map['settings'] = $map['settings'] ?? $realMap['settings'];
 
         $this->name = $name;
         $this->map = $map;
@@ -74,21 +74,6 @@ class SchemeField
         return $this;
     }
 
-    /** Define as configurações extras do campo */
-    function config(string $config, mixed $value = null): static
-    {
-        if (is_null($config)) {
-            $this->map['config'] = [];
-        } else if (is_null($value)) {
-            if (isset($this->map['config'][$config])) {
-                unset($this->map['config'][$config]);
-            }
-        } else {
-            $this->map['config'][$config] = $value;
-        }
-        return $this;
-    }
-
     #==| Recuperar de valores |==#
 
     /** Retorna o nome do campo */
@@ -114,8 +99,8 @@ class SchemeField
             case 'idx':
                 $map['size'] = 10;
                 $map['index'] = $map['index'] ?? true;
-                $map['config']['dbName'] = Datalayer::internalName($map['config']['dbName']);
-                $map['config']['table'] = Datalayer::internalName($map['config']['table']);
+                $map['settings']['datalayer'] = Datalayer::internalName($map['settings']['datalayer']);
+                $map['settings']['table'] = Datalayer::internalName($map['settings']['table']);
                 break;
 
             case 'int':
@@ -151,8 +136,8 @@ class SchemeField
             case 'ids':
                 $map['size'] = null;
                 $map['null'] = false;
-                $map['config']['dbName'] = Datalayer::internalName($map['config']['dbName']);
-                $map['config']['table'] = Datalayer::internalName($map['config']['table']);
+                $map['settings']['datalayer'] = Datalayer::internalName($map['settings']['datalayer']);
+                $map['settings']['table'] = Datalayer::internalName($map['settings']['table']);
                 break;
 
             case 'log':

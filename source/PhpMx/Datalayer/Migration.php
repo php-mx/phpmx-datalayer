@@ -32,8 +32,8 @@ abstract class Migration
     function &table(string $table, ?string $comment = null): SchemeTable
     {
         $returnTable = $this->scheme->table($table, $comment)->fields([
-            $this->f_time('=_created', 'smart control to create')->default(0)->index(true),
-            $this->f_time('=_updated', 'smart control to update')->default(0)->index(true),
+            $this->f_time('=_created', 'moment of record creation')->default(0)->index(true),
+            $this->f_time('=_updated', 'moment of last record update')->default(0)->index(true),
         ]);
         return $returnTable;
     }
@@ -77,13 +77,13 @@ abstract class Migration
     /** Retorna um objeto campo do tipo IDs */
     function f_ids(string $name, ?string $comment = null): SchemeField
     {
-        return new SchemeField($name, ['type' => 'ids', 'comment' => $comment, 'config' => ['dbName' => $this->dbName, 'table' => $name]]);
+        return new SchemeField($name, ['type' => 'ids', 'comment' => $comment, 'settings' => ['datalayer' => $this->dbName, 'table' => $name]]);
     }
 
     /** Retorna um objeto campo do tipo Idx */
     function f_idx(string $name, ?string $comment = null): SchemeField
     {
-        return new SchemeField($name, ['type' => 'idx', 'comment' => $comment, 'config' => ['dbName' => $this->dbName, 'table' => $name]]);
+        return new SchemeField($name, ['type' => 'idx', 'comment' => $comment, 'settings' => ['datalayer' => $this->dbName, 'table' => $name]]);
     }
 
     /** Retorna um objeto campo do tipo Int */

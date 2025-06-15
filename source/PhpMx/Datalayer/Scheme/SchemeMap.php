@@ -19,7 +19,7 @@ class SchemeMap
         'comment' => '',
         'size' => null,
         'null' => true,
-        'config' => []
+        'settings' => []
     ];
 
     protected array $map;
@@ -66,7 +66,7 @@ class SchemeMap
         $fieldMap['default'] = $fieldMap['default'] ?? $currentFieldMap['default'];
         $fieldMap['size'] = $fieldMap['size'] ?? $currentFieldMap['size'];
         $fieldMap['null'] = $fieldMap['null'] ?? $currentFieldMap['null'];
-        $fieldMap['config'] = $fieldMap['config'] ?? $currentFieldMap['config'];
+        $fieldMap['settings'] = $fieldMap['settings'] ?? $currentFieldMap['settings'];
 
         $this->map[$tableName]['fields'][$fieldName] = $fieldMap;
     }

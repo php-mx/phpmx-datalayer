@@ -129,9 +129,9 @@ return new class extends Terminal {
             $feildMethod = strToCamelCase($fieldName);
 
             if (str_starts_with($fieldName, '_')) {
-                $fieldRefName[] = "'$fieldName' => '$fieldName'";
+                $fieldRefName[$fieldName] = $fieldName;
             } else {
-                $fieldRefName[] = "'$fieldName' => '$feildMethod'";
+                $fieldRefName[$fieldName] = $feildMethod;
 
                 $value = 'null';
 
@@ -143,40 +143,37 @@ return new class extends Terminal {
                     }
                 }
 
-                $extras = '';
+                $settings = [];
 
                 switch ($fieldMap['type']) {
                     case 'int':
-                        if ($fieldMap['size']) $extras .= '->size(' . $fieldMap['size'] . ')';
-                        if (isset($fieldMap['config']['min'])) $extras .= '->min(' . $fieldMap['config']['min'] . ')';
-                        if (isset($fieldMap['config']['max'])) $extras .= '->max(' . $fieldMap['config']['max'] . ')';
-                        if (isset($fieldMap['config']['round'])) $extras .= '->round(' . $fieldMap['config']['round'] . ')';
+                        if ($fieldMap['size']) $settings['size'] = $fieldMap['size'];
+                        if (isset($fieldMap['settings']['min'])) $settings['min'] = $fieldMap['settings']['min'];
+                        if (isset($fieldMap['settings']['max'])) $settings['max'] = $fieldMap['settings']['max'];
+                        if (isset($fieldMap['settings']['round'])) $settings['round'] = $fieldMap['settings']['round'];
                         break;
 
                     case 'float':
-                        if ($fieldMap['size']) $extras .= '->size(' . $fieldMap['size'] . ')';
-                        if (isset($fieldMap['config']['min'])) $extras .= '->min(' . $fieldMap['config']['min'] . ')';
-                        if (isset($fieldMap['config']['max'])) $extras .= '->max(' . $fieldMap['config']['max'] . ')';
-                        if (isset($fieldMap['config']['round'])) $extras .= '->round(' . $fieldMap['config']['round'] . ')';
-                        if (isset($fieldMap['config']['decimal'])) $extras .= '->decimal(' . $fieldMap['config']['decimal'] . ')';
+                        if ($fieldMap['size']) $settings['size'] = $fieldMap['size'];
+                        if (isset($fieldMap['settings']['min'])) $settings['min'] = $fieldMap['settings']['min'];
+                        if (isset($fieldMap['settings']['max'])) $settings['max'] = $fieldMap['settings']['max'];
+                        if (isset($fieldMap['settings']['round'])) $settings['round'] = $fieldMap['settings']['round'];
+                        if (isset($fieldMap['settings']['decimal'])) $settings['decimal'] = $fieldMap['settings']['decimal'];
                         break;
 
                     case 'email':
                     case 'string':
                     case 'text':
-                        if ($fieldMap['size']) $extras .= '->size(' . $fieldMap['size'] . ')';
-                        if (isset($fieldMap['config']['crop'])) {
-                            $crop = $fieldMap['config']['crop'] ? "true" : "false";
-                            $extras .= '->round(' . $crop . ')';
-                        }
+                        if ($fieldMap['size']) $settings['size'] = $fieldMap['size'];
+                        if (isset($fieldMap['settings']['crop'])) $settings['crop'] = $fieldMap['settings']['crop'];
                         break;
                     case 'idx':
                     case 'ids':
-                        $extras .= '->_datalayer("' . $fieldMap['config']['dbName'] . '")';
-                        $extras .= '->_table("' . $fieldMap['config']['table'] . '")';
+                        $settings['datalayer'] = $fieldMap['settings']['datalayer'];
+                        $settings['table'] = $fieldMap['settings']['table'];
                         break;
                     default:
-                        $extras = '';
+                        $settings = [];
                 }
 
                 $fieldMap['phpType'] = match ($fieldMap['type']) {
@@ -197,12 +194,12 @@ return new class extends Terminal {
                     'fieldPhpType' => $fieldMap['phpType'],
                     'fieldValue' => $value,
                     'fieldUseNull' => $fieldMap['null'] ? 'true' : 'false',
-                    'fieldExtras' => $extras
+                    'fieldSettings' => $this->arrayToDeclarationString($settings)
                 ];
 
                 if ($fieldMap['type'] == 'idx') {
-                    $data['fieldNamespace'] = 'Model\\' . strToPascalCase("db " . $fieldMap['config']['dbName']);
-                    $data['fieldRecordClass'] = strToPascalCase("record " . $fieldMap['config']['table']);
+                    $data['fieldNamespace'] = 'Model\\' . strToPascalCase("db " . $fieldMap['settings']['datalayer']);
+                    $data['fieldRecordClass'] = strToPascalCase("record " . $fieldMap['settings']['table']);
                     $autocomplete[] = $this->template('datalayer/driver/record/autocomplete_dynamicId', $data);
                 } else {
                     $autocomplete[] = $this->template('datalayer/driver/record/autocomplete', $data);
@@ -218,7 +215,7 @@ return new class extends Terminal {
             'recordClass' => $recordClass,
             'autocomplete' => implode("\n * ", $autocomplete),
             'createFields' => implode('', $createFields),
-            'fieldRefName' => implode(",", $fieldRefName),
+            'fieldRefName' => $this->arrayToDeclarationString($fieldRefName),
         ];
 
         $content = $this->template('datalayer/driver/record/class', $data);
@@ -279,5 +276,17 @@ return new class extends Terminal {
         $template = Import::content($file, $data);
 
         return prepare($template, $data);
+    }
+
+    /** Converte um array em string de declaração de array */
+    protected function arrayToDeclarationString($array): string
+    {
+        $string = var_export($array, true);
+        $string = str_replace(['array (', ')'], ['[', ']'], $string);
+        $string = preg_replace('/\s+/', ' ', $string);
+        $string = preg_replace('/,\s+\]/', ']', $string);
+        $string = preg_replace('/\[\s+/', '[', $string);
+        $string = trim($string);
+        return $string;
     }
 };
