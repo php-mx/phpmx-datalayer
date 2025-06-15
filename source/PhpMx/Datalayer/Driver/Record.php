@@ -28,7 +28,6 @@ abstract class Record
     {
         $this->FIELD['_created'] = new FTime(false, 0);
         $this->FIELD['_updated'] = new FTime(false, 0);
-        $this->FIELD['_deleted'] = new FTime(false, 0);
 
         $this->_arraySet($scheme);
 

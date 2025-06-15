@@ -34,7 +34,6 @@ abstract class Migration
         $returnTable = $this->scheme->table($table, $comment)->fields([
             $this->f_time('=_created', 'smart control to create')->default(0)->index(true),
             $this->f_time('=_updated', 'smart control to update')->default(0)->index(true),
-            $this->f_time('=_deleted', 'smart control to delete')->default(0)->index(true),
         ]);
         return $returnTable;
     }
