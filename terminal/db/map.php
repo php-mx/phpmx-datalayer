@@ -13,7 +13,7 @@ return new class extends Terminal {
         $map = Datalayer::get($dbName)->getConfig('__dbMap') ?? [];
 
         $schemePathName = strToCamelCase("db $dbName");
-        $file = "storage/scheme/db/$schemePathName/map.json";
+        $file = "storage/scheme/$schemePathName/map.json";
 
         Json::export($map, $file);
 
