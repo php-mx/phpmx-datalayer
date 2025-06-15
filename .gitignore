@@ -11,3 +11,4 @@
 #phpmx-datalayer
 /storage/sqlite
 /storage/scheme/db*
+/source/Model/Db*/Driver

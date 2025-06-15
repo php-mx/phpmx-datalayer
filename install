@@ -17,6 +17,7 @@ return new class extends Terminal {
             $ignore .= "\n#phpmx-datalayer";
             $ignore .= "\n/storage/sqlite";
             $ignore .= "\n/storage/scheme/db*";
+            $ignore .= "\n/source/Model/Db*/Driver";
             $ignore .= "\n";
         }
 
