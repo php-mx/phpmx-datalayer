@@ -76,31 +76,31 @@ abstract class Record
     /** Retorna todo os campos e esquemas personalizados do registro tratados em forma de array */
     final function _schemeAll(array $fieldsRemove = []): array
     {
-        $schemeFields = [
+        $fields = [
             'idKey',
             '_changed',
             ...array_keys($this->FIELD_REF_NAME)
         ];
 
-        $schemeFields = array_flip($schemeFields);
+        $fields = array_flip($fields);
 
         foreach (get_class_methods(static::class) as $class) {
             if (str_starts_with($class, 'get_')) {
                 $fieldName = substr($class, 4);
-                if (!isset($schemeFields[$fieldName]))
-                    $schemeFields[$fieldName] = count($schemeFields);
+                if (!isset($fields[$fieldName]))
+                    $fields[$fieldName] = count($fields);
             }
         }
 
         foreach ($fieldsRemove as $remove)
-            if (isset($schemeFields[$remove]))
-                unset($schemeFields[$remove]);
+            if (isset($fields[$remove]))
+                unset($fields[$remove]);
 
 
-        $schemeFields = array_flip($schemeFields);
-        $schemeFields = array_values($schemeFields);
+        $fields = array_flip($fields);
+        $fields = array_values($fields);
 
-        return $this->_scheme($schemeFields);
+        return $this->_scheme($fields);
     }
 
     /** Retorna o momento em que o campo foi criado */
