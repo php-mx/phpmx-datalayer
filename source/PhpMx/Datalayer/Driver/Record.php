@@ -103,7 +103,7 @@ abstract class Record
             if (str_starts_with($class, '_scheme_')) {
                 $fieldName = substr($class, 8);
                 if (!is_array($fields[$fieldName]))
-                    $fields[] = $fieldName;
+                    $fields[$fieldName] = count($fields);
             }
         }
 
