@@ -73,7 +73,7 @@ class SchemeTable
 
         $fields = [];
         foreach ($this->fields as $name => $field) {
-            $field = $field->getFildMap();
+            $field = $field->getMap();
             if ($field || isset($this->map['fields'][$name]))
                 $fields[$name] = $field;
         }
