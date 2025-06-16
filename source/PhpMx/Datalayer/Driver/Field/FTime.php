@@ -7,7 +7,8 @@ use PhpMx\Datalayer\Driver\Field;
 /** Armazena um instante em forma de inteiro */
 class FTime extends Field
 {
-    protected function __formatExternalValue($value)
+    /** Define um novo valor para o campo */
+    function set($value)
     {
         if (is_bool($value))
             $value = $value ? time() : 0;
@@ -17,14 +18,6 @@ class FTime extends Field
 
         $value = is_numeric($value) ? intval($value) : null;
 
-        return $value;
-    }
-
-    protected function __formatInternalValue($value)
-    {
-        if (is_null($value) && $this->NULLABLE)
-            return $value;
-
-        return intval(boolval($value));
+        parent::set($value);
     }
 }

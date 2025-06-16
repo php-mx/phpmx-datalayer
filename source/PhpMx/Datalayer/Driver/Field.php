@@ -17,25 +17,24 @@ abstract class Field
         $this->set($this->DEFAULT);
     }
 
-    /** Define um valor do campo */
-    function set($value): static
+    /** Define um novo valor para o campo */
+    function set($value)
     {
-        $this->VALUE = $this->__formatExternalValue($value);
-        return $this;
+        if (!$this->NULLABLE && is_null($value))
+            $value = $this->DEFAULT;
+
+        $this->VALUE = $value;
     }
 
-    /** Retorna o valor do campo */
+    /** Retorna o valor do campo para ser usado no sistema */
     function get()
     {
         return $this->VALUE;
     }
 
     /** Retorna o valor do campo para ser usado no banco de dados */
-    function __getInsertValue()
+    function __internalValue()
     {
-        return $this->__formatInternalValue($this->VALUE);
+        return $this->VALUE;
     }
-
-    abstract protected function __formatExternalValue($value);
-    abstract protected function __formatInternalValue($value);
 }

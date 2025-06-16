@@ -7,19 +7,21 @@ use PhpMx\Datalayer\Driver\Field;
 /** Armazena dados Booleanos 1 ou 0 */
 class FBoolean extends Field
 {
-    protected function __formatExternalValue($value)
+    /** Define um novo valor para o campo */
+    function set($value)
     {
-        if (is_null($value) && $this->NULLABLE)
-            return $value;
-
-        return boolval($value);
+        $value = is_null($value) ? null : boolval($value);
+        parent::set($value);
     }
 
-    protected function __formatInternalValue($value)
+    /** Retorna o valor do campo para ser usado no banco de dados */
+    function __internalValue()
     {
-        if (is_null($value) && $this->NULLABLE)
-            return $value;
+        $value = parent::__internalValue();
 
-        return intval(boolval($value));
+        if (is_bool($value))
+            $value = intval($value);
+
+        return $value;
     }
 }
