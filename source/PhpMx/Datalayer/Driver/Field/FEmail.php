@@ -6,7 +6,7 @@ namespace PhpMx\Datalayer\Driver\Field;
 class FEmail extends FString
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         if (is_stringable($value)) {
             $value = strtolower($value);

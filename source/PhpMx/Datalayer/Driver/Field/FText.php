@@ -8,7 +8,7 @@ use PhpMx\Datalayer\Driver\Field;
 class FText extends Field
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         if (is_stringable($value))
             $value = trim($value);

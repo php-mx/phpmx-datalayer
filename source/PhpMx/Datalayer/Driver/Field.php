@@ -5,7 +5,7 @@ namespace PhpMx\Datalayer\Driver;
 abstract class Field
 {
     protected mixed $VALUE = null;
-    protected array $SETTINS = [];
+    protected array $SETTINGS = [];
     protected mixed $DEFAULT = null;
     protected bool $NULLABLE = false;
 
@@ -13,17 +13,19 @@ abstract class Field
     {
         $this->NULLABLE = $nullable;
         $this->DEFAULT = $default;
-        $this->SETTINS = $settings;
+        $this->SETTINGS = $settings;
         $this->set($this->DEFAULT);
     }
 
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         if (!$this->NULLABLE && is_null($value))
             $value = $this->DEFAULT;
 
         $this->VALUE = $value;
+
+        return $this;
     }
 
     /** Retorna o valor do campo para ser usado no sistema */

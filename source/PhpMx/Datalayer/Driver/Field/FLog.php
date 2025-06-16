@@ -8,7 +8,7 @@ use PhpMx\Datalayer\Driver\Field;
 class FLog extends Field
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         if (is_json($value))
             $value = json_decode($value, true);
@@ -33,6 +33,7 @@ class FLog extends Field
     function add($line): static
     {
         $this->VALUE[] = [time(), $line];
+
         return $this;
     }
 }

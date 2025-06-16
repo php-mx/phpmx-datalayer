@@ -8,7 +8,7 @@ use PhpMx\Datalayer\Driver\Field;
 class FHash extends Field
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         if (!is_null($value))
             $value = is_md5($value) ? $value : md5($value);

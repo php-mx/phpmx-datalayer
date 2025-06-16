@@ -9,7 +9,7 @@ use PhpMx\Datalayer\Driver\Field;
 class FCode extends Field
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         $value = is_null($value) ? $value : Code::on($value);
 

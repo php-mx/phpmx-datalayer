@@ -8,7 +8,7 @@ use PhpMx\Datalayer\Driver\Field;
 class FConfig extends Field
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         if (func_num_args() == 2)
             return $this->setIn(...func_get_args());
@@ -42,11 +42,13 @@ class FConfig extends Field
     }
 
     /** Define uma configuração no campo */
-    function setIn($var, $value)
+    function setIn($var, $value): static
     {
         $this->VALUE[$var] = $value;
 
         $this->VALUE = array_filter($this->VALUE, fn($v) => is_stringable($v));
+
+        return $this;
     }
 
     /** Retorna uma configuração do campo */
@@ -62,8 +64,10 @@ class FConfig extends Field
     }
 
     /** Verifica se uma configuração existe no campo */
-    function removeIn($var)
+    function removeIn($var): static
     {
         return $this->setIn($var, null);
+
+        return $this;
     }
 }

@@ -8,12 +8,12 @@ use PhpMx\Datalayer\Driver\Field;
 class FInt extends Field
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         if (is_numeric($value)) {
-            $min = $this->SETTINS['min'] ?? $value;
-            $max = $this->SETTINS['max'] ?? $value;
-            $round = $this->SETTINS['roud'] ?? 0;
+            $min = $this->SETTINGS['min'] ?? $value;
+            $max = $this->SETTINGS['max'] ?? $value;
+            $round = $this->SETTINGS['roud'] ?? 0;
 
             $value = num_interval($value, $min, $max);
             $value = num_round($value, $round);

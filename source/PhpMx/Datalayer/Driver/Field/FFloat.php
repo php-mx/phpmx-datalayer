@@ -8,13 +8,13 @@ use PhpMx\Datalayer\Driver\Field;
 class FFloat extends Field
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         if (is_numeric($value)) {
-            $min = $this->SETTINS['min'] ?? $value;
-            $max = $this->SETTINS['max'] ?? $value;
-            $decimal = $this->SETTINS['decimal'] ?? 2;
-            $round = $this->SETTINS['roud'] ?? 0;
+            $min = $this->SETTINGS['min'] ?? $value;
+            $max = $this->SETTINGS['max'] ?? $value;
+            $decimal = $this->SETTINGS['decimal'] ?? 2;
+            $round = $this->SETTINGS['roud'] ?? 0;
 
             $value = num_interval($value, $min, $max);
             $value = num_format($value, $decimal, $round);

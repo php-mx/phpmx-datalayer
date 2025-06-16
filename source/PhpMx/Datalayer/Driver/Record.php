@@ -12,7 +12,7 @@ use PhpMx\Log;
  */
 abstract class Record
 {
-    /** @var \PhpMx\Datalayer\Driver\Field[] */
+    /** @var PhpMx\Datalayer\Driver\Field[]|FIdx[]| */
     protected array $FIELD = [];
 
     protected ?int $ID = null;
@@ -165,7 +165,7 @@ abstract class Record
     {
         if (is_array($scheme)) {
             foreach ($scheme as $name => $value) {
-                $name = str_starts_with($name, '_') ? $name : strToSnakeCase($name);
+                $name = str_starts_with($name, '_') ? $name : strToCamelCase($name);
                 if (isset($this->FIELD[$name]))
                     $this->FIELD[$name]->set($value);
             }
@@ -253,10 +253,11 @@ abstract class Record
     /** Executa o comando parar salvar os registros referenciados via IDX */
     final protected function __runSaveIdx()
     {
-        // foreach ($this->FIELD as &$field)
-        //     if (is_class($field, FIdx::class) && $field->_checkLoad() && $field->_checkSave())
-        //         if (!$field->id ||  $field->id != $this->ID || !is_class($field->_record(), $this::class))
-        //             $field->_save();
+        foreach ($this->FIELD as &$field) {
+            if (is_class($field, FIdx::class) && $field->_checkLoad() && $field->_checkSave())
+                if (!$field->id ||  $field->id != $this->ID || !is_class($field->_record(), $this::class))
+                    $field->_save();
+        }
     }
 
     /** Executa o comando parar criar o registro */

@@ -9,11 +9,11 @@ use PhpMx\Datalayer\Driver\Field;
 class FString extends Field
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         if (is_stringable($value)) {
-            $size = $this->SETTINS['size'] ?? 50;
-            $crop = $this->SETTINS['crop'] ?? false;
+            $size = $this->SETTINGS['size'] ?? 50;
+            $crop = $this->SETTINGS['crop'] ?? false;
 
             if ($crop && $size)
                 $value = substr($value, 0, $size);

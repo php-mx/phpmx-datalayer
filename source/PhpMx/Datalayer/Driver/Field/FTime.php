@@ -8,7 +8,7 @@ use PhpMx\Datalayer\Driver\Field;
 class FTime extends Field
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         if (is_bool($value))
             $value = $value ? time() : 0;
@@ -18,6 +18,6 @@ class FTime extends Field
 
         $value = is_numeric($value) ? intval($value) : null;
 
-        parent::set($value);
+        return parent::set($value);
     }
 }

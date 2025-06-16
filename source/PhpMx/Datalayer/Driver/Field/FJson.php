@@ -8,7 +8,7 @@ use PhpMx\Datalayer\Driver\Field;
 class FJson extends Field
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         if (is_json($value))
             $value = json_decode($value, true);

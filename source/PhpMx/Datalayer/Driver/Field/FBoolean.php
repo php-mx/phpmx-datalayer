@@ -8,7 +8,7 @@ use PhpMx\Datalayer\Driver\Field;
 class FBoolean extends Field
 {
     /** Define um novo valor para o campo */
-    function set($value)
+    function set($value): static
     {
         $value = is_null($value) ? null : boolval($value);
 
