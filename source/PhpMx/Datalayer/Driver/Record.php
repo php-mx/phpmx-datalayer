@@ -4,7 +4,6 @@ namespace PhpMx\Datalayer\Driver;
 
 use PhpMx\Datalayer\Query;
 use PhpMx\Datalayer\Driver\Field\FIdx;
-use PhpMx\Datalayer\Driver\Field\FTime;
 use Error;
 use PhpMx\Log;
 
@@ -13,8 +12,10 @@ use PhpMx\Log;
  */
 abstract class Record
 {
-    protected ?int $ID = null;
+    /** @var \PhpMx\Datalayer\Driver\Field[] */
     protected array $FIELD = [];
+
+    protected ?int $ID = null;
 
     protected array $INITIAL = [];
     protected array $FIELD_REF_NAME = [];
@@ -26,9 +27,6 @@ abstract class Record
 
     function __construct(array $scheme)
     {
-        $this->FIELD['_created'] = new FTime(false, 0);
-        $this->FIELD['_updated'] = new FTime(false, 0);
-
         $this->_arraySet($scheme);
 
         $this->ID = $scheme['id'] ?? null;

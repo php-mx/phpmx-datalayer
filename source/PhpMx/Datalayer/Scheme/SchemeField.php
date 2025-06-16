@@ -59,7 +59,7 @@ class SchemeField
         return $this;
     }
 
-    /** Define se o campo aceita valores nulos (f_boolean, f_code, f_email, f_float, f_hash, f_idx, f_int, f_string, f_time) */
+    /** Define se o campo aceita valores nulos (f_code, f_email, f_float, f_hash, f_idx, f_int, f_string, f_time) */
     function null(bool $null): static
     {
         $this->map['null'] = boolval($null);
@@ -153,29 +153,30 @@ class SchemeField
         };
     }
 
+    /** Retorna o mapa de campos BOOLEAN */
     protected function __mapBoolean(array $map): array
     {
         $map['size'] = 1;
-
-        if (!$map['null'] && is_null($map['default']))
-            $map['default'] = false;
+        $map['null'] = false;
 
         if (is_bool($map['default']))
-            $map['default'] = intval($map['default']);
+            $map['default'] = intval(boolval($map['default'] ?? 0));
 
         return $map;
     }
 
+    /** Retorna o mapa de campos CODE */
     protected function __mapCode(array $map): array
     {
         $map['size'] = 34;
 
-        if (!is_null($map['default']) && !Code::check($map['default']))
+        if (isset($map['default']) && !Code::check($map['default']))
             $map['default'] = Code::on($map['default']);
 
         return $map;
     }
 
+    /** Retorna o mapa de campos CONFIG */
     protected function __mapConfig(array $map): array
     {
         $map['size'] = null;
@@ -203,6 +204,7 @@ class SchemeField
         return $map;
     }
 
+    /** Retorna o mapa de campos EMAIL */
     protected function __mapEmail(array $map): array
     {
         $map['size'] = 254;
@@ -213,12 +215,10 @@ class SchemeField
         return $map;
     }
 
+    /** Retorna o mapa de campos FLOAT */
     protected function __mapFloat(array $map): array
     {
         $map['size'] = $map['size'] ?? 10;
-
-        if (!$map['null'] && is_null($map['default']))
-            $map['default'] = 0;
 
         if (!isset($map['settings']['decimal']))
             $map['settings']['decimal'] = 2;
@@ -226,16 +226,18 @@ class SchemeField
         return $map;
     }
 
+    /** Retorna o mapa de campos HASH */
     protected function __mapHash(array $map): array
     {
         $map['size'] = 32;
 
-        if (!is_null($map['default']) && !is_md5($map['default']))
+        if (isset($map['default']) && !is_md5($map['default']))
             $map['default'] = md5($map['default']);
 
         return $map;
     }
 
+    /** Retorna o mapa de campos IDS */
     protected function __mapIds(array $map): array
     {
         $map['size'] = null;
@@ -255,6 +257,7 @@ class SchemeField
         return $map;
     }
 
+    /** Retorna o mapa de campos IDX */
     protected function __mapIdx(array $map): array
     {
         $map['size'] = 10;
@@ -265,16 +268,15 @@ class SchemeField
         return $map;
     }
 
+    /** Retorna o mapa de campos INT */
     protected function __mapInt(array $map): array
     {
         $map['size'] = $map['size'] ?? 10;
 
-        if (!$map['null'] && is_null($map['default']))
-            $map['default'] = 0;
-
         return $map;
     }
 
+    /** Retorna o mapa de campos JSON */
     protected function __mapJson(array $map): array
     {
         $map['size'] = null;
@@ -286,6 +288,7 @@ class SchemeField
         return $map;
     }
 
+    /** Retorna o mapa de campos LOG */
     protected function __mapLog(array $map): array
     {
         $map['size'] = null;
@@ -297,18 +300,17 @@ class SchemeField
         return $map;
     }
 
+    /** Retorna o mapa de campos STRING */
     protected function __mapString(array $map): array
     {
         $map['size'] = $map['size'] ?? 50;
-
-        if (!$map['null'] && is_null($map['default']))
-            $map['default'] = '';
 
         $map['settings']['crop'] = boolval($map['settings']['crop'] ?? false);
 
         return $map;
     }
 
+    /** Retorna o mapa de campos TEXT */
     protected function __mapText(array $map): array
     {
         $map['size'] = null;
@@ -319,12 +321,10 @@ class SchemeField
         return $map;
     }
 
+    /** Retorna o mapa de campos TIME */
     protected function __mapTime(array $map): array
     {
         $map['size'] = 11;
-
-        if ($map['null'] && is_null($map['default']))
-            $map['default'] = 0;
 
         return $map;
     }
