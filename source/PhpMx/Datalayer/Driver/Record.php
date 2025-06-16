@@ -18,7 +18,6 @@ abstract class Record
     protected ?int $ID = null;
 
     protected array $INITIAL = [];
-    protected array $FIELD_REF_NAME = [];
 
     protected string $DATALAYER;
     protected string $TABLE;
@@ -30,7 +29,7 @@ abstract class Record
         $this->_arraySet($scheme);
 
         $this->ID = $scheme['id'] ?? null;
-        $this->INITIAL = $this->_arrayInsert();
+        $this->INITIAL = $this->__insertValues();
 
         if ($this->_checkInDb()) {
             $drvierClass = 'Model\\' . strToPascalCase("db $this->DATALAYER") . '\\' . strToPascalCase("db $this->DATALAYER");
@@ -53,11 +52,29 @@ abstract class Record
         return $drvierClass::${$tableMethod}->idToIdkey($this->id);
     }
 
+    /** Retorna o momento em que o campo foi criado */
+    final function _created(): int
+    {
+        return $this->FIELD['_created']->get();
+    }
+
+    /** Retorna o momento da ultima atualização do campo  */
+    final function _updated(): int
+    {
+        return $this->FIELD['_updated']->get();
+    }
+
+    /** Retorna o momento da ultima mudança (create ou update) do campo  */
+    final function _changed(): int
+    {
+        return $this->_updated() ? $this->_updated() : $this->_created();
+    }
+
     /** Retorna o valor do esquema de um campo do registro */
     final function _schemeValue(string $field)
     {
-        $name = isset($this->FIELD_REF_NAME[$field]) ? $this->FIELD_REF_NAME[$field] : $field;
-        return method_exists($this, "get_$name") ? $this->{"get_$name"}() : $this->_array($field)[$field];
+        $field = str_starts_with($field, '_') ? $field : strToCamelCase($field);
+        return method_exists($this, "_scheme_$field") ? $this->{"_scheme_$field"}() : $this->_array($field)[$field];
     }
 
     /** Retorna o esquema dos campos do registro tratados em forma de array */
@@ -77,16 +94,16 @@ abstract class Record
         $fields = [
             'idKey',
             '_changed',
-            ...array_keys($this->FIELD_REF_NAME)
+            ...array_keys($this->FIELD)
         ];
 
         $fields = array_flip($fields);
 
         foreach (get_class_methods(static::class) as $class) {
-            if (str_starts_with($class, 'get_')) {
-                $fieldName = substr($class, 4);
-                if (!isset($fields[$fieldName]))
-                    $fields[$fieldName] = count($fields);
+            if (str_starts_with($class, '_scheme_')) {
+                $fieldName = substr($class, 8);
+                if (!is_array($fields[$fieldName]))
+                    $fields[] = $fieldName;
             }
         }
 
@@ -94,33 +111,14 @@ abstract class Record
             if (isset($fields[$remove]))
                 unset($fields[$remove]);
 
-
         $fields = array_flip($fields);
         $fields = array_values($fields);
 
         return $this->_scheme($fields);
     }
 
-    /** Retorna o momento em que o campo foi criado */
-    final function _created(): int
-    {
-        return $this->FIELD['_created']->get();
-    }
-
-    /** Retorna o momento da ultima atualização do campo  */
-    final function _updated(): int
-    {
-        return $this->FIELD['_updated']->get();
-    }
-
-    /** Retorna o momento da ultima mudança (create ou update) do campo  */
-    final function _changed(): int
-    {
-        return $this->_updated() ? $this->_updated() : $this->_created();
-    }
-
     /** Retorna o esquema de _changed */
-    final function get__changed()
+    final protected function _scheme__changed()
     {
         return $this->_changed();
     }
@@ -148,8 +146,12 @@ abstract class Record
                 $scheme[$field] = $this->id();
             } else if ($field == 'idKey') {
                 $scheme[$field] = $this->idKey();
+            }
+            if (str_starts_with($field, '_')) {
+                if (isset($this->FIELD[$field]))
+                    $scheme[$field] = $this->FIELD[$field]->get();
             } else {
-                $name = isset($this->FIELD_REF_NAME[$field]) ? $this->FIELD_REF_NAME[$field] : $field;
+                $name = strToCamelCase($field);
                 if (isset($this->FIELD[$name]))
                     $scheme[$field] = $this->FIELD[$name]->get();
             }
@@ -163,24 +165,12 @@ abstract class Record
     {
         if (is_array($scheme)) {
             foreach ($scheme as $name => $value) {
-                $name = isset($this->FIELD_REF_NAME[$name]) ? $this->FIELD_REF_NAME[$name] : $name;
-
+                $name = str_starts_with($name, '_') ? $name : strToSnakeCase($name);
                 if (isset($this->FIELD[$name]))
                     $this->FIELD[$name]->set($value);
             }
         }
         return $this;
-    }
-
-    /** Retorna o array dos campos da forma como são salvos no banco de dados */
-    final function _arrayInsert(bool $returnId = false): array
-    {
-        $return = $returnId ? ['id' => $this->id()] : [];
-
-        foreach ($this->FIELD_REF_NAME as $name => $ref)
-            $return[$name] = $this->FIELD[$ref]->_insert();
-
-        return $return;
     }
 
     /** Aplica um array de mudanças aos campos do registro */
@@ -201,26 +191,17 @@ abstract class Record
     /** Verifica se algum dos campos fornecidos foi alterado */
     final function _checkChange(...$fields): bool
     {
-        if (empty($fields))
-            return $this->INITIAL != $this->_arrayInsert();
-
-
-        $fields = array_filter($fields, fn($v) => !str_starts_with($v, '_'));
-
-        $flipNames = array_flip($this->FIELD_REF_NAME);
-
         $initial = $this->INITIAL;
-        $current = $this->_arrayInsert();
+        $current = $this->__insertValues();
 
+        if (empty($fields))
+            return $initial != $current;
 
-        foreach ($fields as $field) {
-            if (isset($flipNames[$field]))
-                $field = $flipNames[$field];
+        $fields = array_map(fn($v) => str_starts_with($v, '_') ? $v : strToSnakeCase($v), $fields);
 
-            if (in_array($field, array_keys($initial)))
-                if ($initial[$field] != $current[$field])
-                    return true;
-        }
+        foreach ($fields as $field)
+            if ($initial[$field] != $current[$field])
+                return true;
 
         return false;
     }
@@ -229,6 +210,19 @@ abstract class Record
     final function _checkSave(): bool
     {
         return !is_null($this->id()) && $this->id() >= 0;
+    }
+
+    /** Retorna o array dos campos da forma como são salvos no banco de dados */
+    final protected function __insertValues(bool $returnId = false): array
+    {
+        $return = $returnId ? ['id' => $this->id()] : [];
+
+        foreach ($this->FIELD as $name => $field) {
+            $name = str_starts_with($name, '_') ? $name : strToSnakeCase($name);
+            $return[$name] = $field->__internalValue();
+        }
+
+        return $return;
     }
 
     /** Prepara o registro para ser excluido PERMANENTEMENTE no proximo _save */
@@ -259,10 +253,10 @@ abstract class Record
     /** Executa o comando parar salvar os registros referenciados via IDX */
     final protected function __runSaveIdx()
     {
-        foreach ($this->FIELD as &$field)
-            if (is_class($field, FIdx::class) && $field->_checkLoad() && $field->_checkSave())
-                if (!$field->id ||  $field->id != $this->ID || !is_class($field->_record(), $this::class))
-                    $field->_save();
+        // foreach ($this->FIELD as &$field)
+        //     if (is_class($field, FIdx::class) && $field->_checkLoad() && $field->_checkSave())
+        //         if (!$field->id ||  $field->id != $this->ID || !is_class($field->_record(), $this::class))
+        //             $field->_save();
     }
 
     /** Executa o comando parar criar o registro */
@@ -274,7 +268,7 @@ abstract class Record
             $this->FIELD['_created']->set(true);
 
             $this->ID = Query::insert($this->TABLE)
-                ->values($this->_arrayInsert())
+                ->values($this->__insertValues())
                 ->run($this->DATALAYER);
 
             $drvierClass = 'Model\\' . strToPascalCase("db $this->DATALAYER") . '\\' . strToPascalCase("db $this->DATALAYER");
@@ -296,7 +290,7 @@ abstract class Record
         if ($forceUpdate || $this->_checkChange()) {
             $onUpdate = $this->_onUpdate() ?? null;
             if ($onUpdate ?? true) {
-                $dif = $this->_arrayInsert();
+                $dif = $this->__insertValues();
 
                 foreach ($dif as $name => $value)
                     if ($value == $this->INITIAL[$name])

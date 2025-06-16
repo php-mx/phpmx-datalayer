@@ -117,7 +117,6 @@ return new class extends Terminal {
         $datalayer = $this->dbName;
         $tableClass = strToPascalCase("table $tableName");
         $recordClass = strToPascalCase("record $tableName");
-        $fieldRefName = [];
 
         $fileName = "Driver$recordClass";
 
@@ -128,11 +127,7 @@ return new class extends Terminal {
 
             $feildMethod = strToCamelCase($fieldName);
 
-            if (str_starts_with($fieldName, '_')) {
-                $fieldRefName[$fieldName] = $fieldName;
-            } else {
-                $fieldRefName[$fieldName] = $feildMethod;
-
+            if (!str_starts_with($fieldName, '_')) {
                 $value = 'null';
 
                 if (!is_null($fieldMap['default'])) {
@@ -215,7 +210,6 @@ return new class extends Terminal {
             'recordClass' => $recordClass,
             'autocomplete' => implode("\n * ", $autocomplete),
             'createFields' => implode('', $createFields),
-            'fieldRefName' => $this->arrayToDeclarationString($fieldRefName),
         ];
 
         $content = $this->template('datalayer/driver/record/class', $data);

@@ -11,8 +11,6 @@ namespace [#namespace]\Driver;
  */
 abstract class Driver[#recordClass] extends \PhpMx\Datalayer\Driver\Record
 {
-    protected array $FIELD_REF_NAME = [#fieldRefName];
-
     protected string $DATALAYER = '[#datalayer]';
     protected string $TABLE = '[#tableName]';
 
