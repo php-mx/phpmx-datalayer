@@ -105,9 +105,9 @@ trait MigrationTerminalTrait
         $logDdName = Datalayer::externalName(self::$dbName, 'db');
 
         log_add("migration.$logAction", '[#] [[#]]', [$logDdName, $file,], function () use ($file, $mode) {
-            Terminal::echo("[#action] migration [#file]", [
-                'action' => $mode ? 'Aplicando' : 'Revertendo',
-                'file' => File::getOnly($file),
+            Terminal::echo("run [#action] [#file]", [
+                'action' => $mode ? 'up' : 'down',
+                'file' => $file,
             ]);
 
             $class = substr($file, 6, -4);
