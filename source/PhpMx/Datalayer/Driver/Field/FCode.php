@@ -11,9 +11,14 @@ class FCode extends Field
     /** Define um novo valor para o campo */
     function set($value)
     {
-        if (!is_null($value))
-            $value = Code::check($value) ? $value : Code::on($value);
+        $value = is_null($value) ? $value : Code::on($value);
 
-        parent::set($value);
+        return parent::set($value);
+    }
+
+    /** Verifica se  baum valor bate com o valor do campo */
+    function compare($value): bool
+    {
+        return Code::compare(Code::on($value), $this->get());
     }
 }

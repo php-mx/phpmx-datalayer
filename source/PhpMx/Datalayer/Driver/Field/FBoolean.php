@@ -11,7 +11,8 @@ class FBoolean extends Field
     function set($value)
     {
         $value = is_null($value) ? null : boolval($value);
-        parent::set($value);
+
+        return parent::set($value);
     }
 
     /** Retorna o valor do campo para ser usado no banco de dados */

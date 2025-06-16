@@ -7,7 +7,21 @@ use PhpMx\Datalayer\Driver\Field;
 /** Armazena um hash MD5 */
 class FHash extends Field
 {
-    protected function __formatValueToExternalUse($value) {}
+    /** Define um novo valor para o campo */
+    function set($value)
+    {
+        if (!is_null($value))
+            $value = is_md5($value) ? $value : md5($value);
 
-    protected function __formatValueToInternalUse($value) {}
+        return parent::set($value);
+    }
+
+    /** Verifica se  baum valor bate com o valor do campo */
+    function compare($value): bool
+    {
+        if (!is_null($value))
+            $value = is_md5($value) ? $value : md5($value);
+
+        return $value == $this->VALUE;
+    }
 }

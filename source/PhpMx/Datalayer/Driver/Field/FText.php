@@ -7,7 +7,12 @@ use PhpMx\Datalayer\Driver\Field;
 /** Armazena uma variavel em forma de texto livre */
 class FText extends Field
 {
-    protected function __formatValueToExternalUse($value) {}
+    /** Define um novo valor para o campo */
+    function set($value)
+    {
+        if (is_stringable($value))
+            $value = trim($value);
 
-    protected function __formatValueToInternalUse($value) {}
+        return parent::set($value);
+    }
 }

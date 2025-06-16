@@ -7,7 +7,22 @@ use PhpMx\Datalayer\Driver\Field;
 /** Armazena campo com um valor JSON */
 class FJson extends Field
 {
-    protected function __formatValueToExternalUse($value) {}
+    /** Define um novo valor para o campo */
+    function set($value)
+    {
+        if (is_json($value))
+            $value = json_decode($value, true);
 
-    protected function __formatValueToInternalUse($value) {}
+        return parent::set($value);
+    }
+
+    /** Retorna o valor do campo para ser usado no banco de dados */
+    function __internalValue()
+    {
+        $value = parent::__internalValue();
+
+        $value = json_encode($value);
+
+        return $value;
+    }
 }
