@@ -22,11 +22,17 @@ class Mysql extends BaseConnection
         $this->data['data'] = $this->data['data'] ?? env("DB_{$envName}_DATA");
         $this->data['user'] = $this->data['user'] ?? env("DB_{$envName}_USER");
         $this->data['pass'] = $this->data['pass'] ?? env("DB_{$envName}_PASS");
+        $this->data['port'] = $this->data['port'] ?? env("DB_{$envName}_PORT");
 
         $this->data['pass'] = Cif::off($this->data['pass']);
 
+        $dsn = "mysql:host={$this->data['host']}";
+        if (!empty($this->data['port'])) $dsn .= ";port={$this->data['port']}";
+
+        $dsn .= ";dbname={$this->data['data']};charset=utf8";
+
         $this->instancePDO = [
-            "mysql:host={$this->data['host']};dbname={$this->data['data']};charset=utf8",
+            $dsn,
             $this->data['user'],
             $this->data['pass']
         ];
