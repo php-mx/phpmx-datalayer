@@ -5,10 +5,5 @@
 /migration
 /source/Model
 
-#phpmx-cif
+#phpmx-core
 /storage/certificate
-
-#phpmx-datalayer
-/storage/sqlite
-/storage/scheme/db*
-/source/Model/Db*/Driver
