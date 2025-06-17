@@ -24,10 +24,15 @@ class Mysql extends BaseConnection
         $this->data['pass'] = $this->data['pass'] ?? env("DB_{$envName}_PASS");
         $this->data['port'] = $this->data['port'] ?? env("DB_{$envName}_PORT");
 
+        if (empty($this->data['port']))
+            unset($this->data['port']);
+
         $this->data['pass'] = Cif::off($this->data['pass']);
 
         $dsn = "mysql:host={$this->data['host']}";
-        if (!empty($this->data['port'])) $dsn .= ";port={$this->data['port']}";
+
+        if ($this->data['port'])
+            $dsn .= ";port={$this->data['port']}";
 
         $dsn .= ";dbname={$this->data['data']};charset=utf8";
 
