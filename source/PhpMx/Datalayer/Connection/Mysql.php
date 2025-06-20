@@ -70,7 +70,7 @@ class Mysql extends BaseConnection
                 ->limit(1);
 
             if (!count($this->executeQuery($configTableExistsQuery)))
-                $this->executeQuery('CREATE TABLE __config (`name` VARCHAR (100), `value` TEXT);');
+                $this->executeQuery('CREATE TABLE __config (`name` VARCHAR(100) PRIMARY KEY, `value` TEXT);');
 
             foreach ($this->executeQuery(Query::select('__config')) as $config)
                 $this->config[$config['name']] = is_serialized($config['value']) ? unserialize($config['value']) : $config['value'];
