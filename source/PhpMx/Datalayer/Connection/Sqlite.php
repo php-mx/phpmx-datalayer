@@ -107,14 +107,6 @@ class Sqlite extends BaseConnection
 
         $listIndexTable = $this->executeQuery("SELECT name FROM sqlite_master WHERE tbl_name='$tableName' and  type = 'index'");
 
-        $indexes = [];
-
-        foreach ($listIndexTable as $index) {
-            $index = $index['name'];
-            $indexField = str_replace("$tableName.", '', $index);
-            $indexes[$indexField] = true;
-        }
-
         $newFields = $this->getConfig('__dbMap')[$tableName]['fields'];
 
         foreach (array_keys($fields['drop']) as $fieldName) {
@@ -122,6 +114,19 @@ class Sqlite extends BaseConnection
                 unset($newFields[$fieldName]);
             if (isset($indexes[$fieldName]))
                 unset($indexes[$fieldName]);
+        }
+
+        $indexes = [];
+
+        foreach ($listIndexTable as $index) {
+            $index = $index['name'];
+            $index = explode('.', $index);
+            list($indexTable, $indexField, $indexType) = $index;
+            if ($indexes[$indexField])
+                $indexes["$indexField.$indexType"] = [
+                    $indexField,
+                    boolval($indexType == 'unique')
+                ];
         }
 
         foreach ($fields['add'] as $name => $field) {
@@ -183,11 +188,16 @@ class Sqlite extends BaseConnection
     {
         $query = [];
 
-        foreach ($index as $indexName => $indexStatus) {
-            if ($indexStatus) {
-                $query[] = "CREATE INDEX [$name.$indexName] ON $name($indexName);";
+        foreach ($index as $indexName => $scheme) {
+            if ($scheme) {
+                list($field, $unique) = $scheme;
+                if ($unique) {
+                    $query[] = "CREATE UNIQUE INDEX [$name.$indexName] ON $name($field);";
+                } else {
+                    $query[] = "CREATE INDEX [$name.$indexName] ON $name($field);";
+                }
             } else {
-                $query[] = "DROP INDEX [$name.$indexName];";
+                $query[] = "DROP INDEX IF EXISTS [$name.$indexName];";
             }
         }
 

@@ -25,6 +25,7 @@ class SchemeField
         $this->map['size'] = $map['size'] ?? $realMap['size'];
         $this->map['null'] = $map['null'] ?? $realMap['null'];
         $this->map['index'] = $map['index'] ?? $realMap['index'];
+        $this->map['unique'] = $map['unique'] ?? $realMap['unique'];
         $this->map['comment'] = $map['comment'] ?? $realMap['comment'];
         $this->map['default'] = $map['default'] ?? $realMap['default'];
         $this->map['settings'] = $map['settings'] ?? $realMap['settings'];
@@ -67,9 +68,18 @@ class SchemeField
     }
 
     /** Define se o campo deve ser indexado (f_boolean, f_code, f_email, f_float, f_hash, f_idx, f_int, f_string, f_time) */
-    function index(?bool $index): static
+    function index(bool $index): static
     {
+        if (!$index) $this->indexUnique(false);
         $this->map['index'] = $index;
+        return $this;
+    }
+
+    /** Define se o campo deve ser indexado com valor unico (f_boolean, f_code, f_email, f_float, f_hash, f_idx, f_int, f_string, f_time) */
+    function indexUnique(bool $index): static
+    {
+        if ($index) $this->index(true);
+        $this->map['unique'] = $index;
         return $this;
     }
 
@@ -261,7 +271,6 @@ class SchemeField
     protected function __mapIdx(array $map): array
     {
         $map['size'] = 10;
-        $map['index'] = $map['index'] ?? true;
         $map['settings']['datalayer'] = Datalayer::internalName($map['settings']['datalayer']);
         $map['settings']['table'] = Datalayer::internalName($map['settings']['table']);
 

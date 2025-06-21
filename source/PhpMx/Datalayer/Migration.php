@@ -83,7 +83,7 @@ abstract class Migration
     /** Retorna um objeto campo do tipo Idx */
     function fIdx(string $name, ?string $comment = null): SchemeField
     {
-        return new SchemeField($name, ['type' => 'idx', 'comment' => $comment, 'settings' => ['datalayer' => $this->dbName, 'table' => $name]]);
+        return new SchemeField($name, ['type' => 'idx', 'comment' => $comment, 'index' => true, 'settings' => ['datalayer' => $this->dbName, 'table' => $name]]);
     }
 
     /** Retorna um objeto campo do tipo Int */

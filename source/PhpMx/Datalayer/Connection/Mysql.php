@@ -147,11 +147,16 @@ class Mysql extends BaseConnection
     {
         $query = [];
 
-        foreach ($index as $indexName => $indexStatus) {
-            if ($indexStatus) {
-                $query[] = "CREATE INDEX `$name.$indexName` ON `$name`(`$indexName`);";
+        foreach ($index as $indexName => $scheme) {
+            if ($scheme) {
+                list($field, $unique) = $scheme;
+                if ($unique) {
+                    $query[] = "CREATE UNIQUE INDEX `$name.$indexName` ON `$name`(`$field`);";
+                } else {
+                    $query[] = "CREATE INDEX `$name.$indexName` ON `$name`(`$field`);";
+                }
             } else {
-                $query[] = "DROP INDEX `$name.$indexName` ON `$name`;";
+                $query[] = "DROP INDEX IF EXISTS `$name.$indexName` ON `$name`;";
             }
         }
 

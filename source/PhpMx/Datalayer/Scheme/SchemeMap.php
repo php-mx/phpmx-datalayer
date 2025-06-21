@@ -14,7 +14,8 @@ class SchemeMap
 
     final const FIELD_MAP = [
         'type' => 'string',
-        'index' => null,
+        'index' => false,
+        'unique' => false,
         'default' => null,
         'comment' => '',
         'size' => null,
@@ -118,27 +119,27 @@ class SchemeMap
     #==| INDEX |==#
 
     /** Retorna o nome de um indice de uma tabela */
-    function getIndex(string $tableName, string $fieldName, $inRealMap = false): ?string
+    function getIndex(string $tableName, string $indexName, $inRealMap = false): ?array
     {
-        return $this->get($inRealMap)[$tableName]['index'][$fieldName] ?? null;
+        return $this->get($inRealMap)[$tableName]['index'][$indexName] ?? null;
     }
 
     /** Adiciona um indice de uma tabela */
-    function addIndex(string $tableName, string $fieldName): void
+    function addIndex(string $tableName, string $indexName, array $index): void
     {
-        $this->map[$tableName]['index'][$fieldName] = "$tableName.$fieldName";
+        $this->map[$tableName]['index'][$indexName] = $index;
     }
 
     /** Remove um indice de uma tabela */
-    function dropIndex(string $tableName, string $fieldName): void
+    function dropIndex(string $tableName, string $indexName): void
     {
-        if ($this->checkIndex($tableName, $fieldName))
-            unset($this->map[$tableName]['index'][$fieldName]);
+        if ($this->checkIndex($tableName, $indexName))
+            unset($this->map[$tableName]['index'][$indexName]);
     }
 
     /** Verifica se um indice existe em uma tabela */
-    function checkIndex(string $tableName, string $fieldName, $inRealMap = false): bool
+    function checkIndex(string $tableName, string $indexName, $inRealMap = false): bool
     {
-        return isset($this->get($inRealMap)[$tableName]['index'][$fieldName]);
+        return boolval($this->getIndex($tableName, $indexName, $inRealMap) ?? false);
     }
 }
