@@ -16,8 +16,8 @@ abstract class Driver[#recordClass] extends \PhpMx\Datalayer\Driver\Record
 
     final function __construct(mixed $scheme = null)
     {
-        $this->FIELD['_created'] = new \PhpMx\Datalayer\Driver\Field\FTime(false, 0, []);
-        $this->FIELD['_updated'] = new \PhpMx\Datalayer\Driver\Field\FTime(false, 0, []);
+        $this->FIELD['_created'] = new \PhpMx\Datalayer\Driver\Field\FTime('_created', false, 0, []);
+        $this->FIELD['_updated'] = new \PhpMx\Datalayer\Driver\Field\FTime('_updated', false, 0, []);
 
 [#createFields]
         parent::__construct($scheme);

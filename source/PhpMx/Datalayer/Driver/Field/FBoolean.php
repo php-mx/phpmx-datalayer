@@ -16,12 +16,14 @@ class FBoolean extends Field
     }
 
     /** Retorna o valor do campo para ser usado no banco de dados */
-    function __internalValue()
+    function __internalValue(bool $validate = false)
     {
         $value = parent::__internalValue();
 
         if (is_bool($value))
             $value = intval($value);
+
+        if ($validate) $this->validade($value);
 
         return $value;
     }

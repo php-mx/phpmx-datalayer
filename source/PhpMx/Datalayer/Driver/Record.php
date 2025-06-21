@@ -213,13 +213,13 @@ abstract class Record
     }
 
     /** Retorna o array dos campos da forma como são salvos no banco de dados */
-    final protected function __insertValues(bool $returnId = false): array
+    final protected function __insertValues(bool $validate = false): array
     {
-        $return = $returnId ? ['id' => $this->id()] : [];
+        $return = [];
 
         foreach ($this->FIELD as $name => $field) {
             $name = str_starts_with($name, '_') ? $name : strToSnakeCase($name);
-            $return[$name] = $field->__internalValue();
+            $return[$name] = $field->__internalValue($validate);
         }
 
         return $return;
@@ -269,7 +269,7 @@ abstract class Record
             $this->FIELD['_created']->set(true);
 
             $this->ID = Query::insert($this->TABLE)
-                ->values($this->__insertValues())
+                ->values($this->__insertValues(true))
                 ->run($this->DATALAYER);
 
             $drvierClass = 'Model\\' . strToPascalCase("db $this->DATALAYER") . '\\' . strToPascalCase("db $this->DATALAYER");
@@ -291,7 +291,7 @@ abstract class Record
         if ($forceUpdate || $this->_checkChange()) {
             $onUpdate = $this->_onUpdate() ?? null;
             if ($onUpdate ?? true) {
-                $dif = $this->__insertValues();
+                $dif = $this->__insertValues(true);
 
                 foreach ($dif as $name => $value)
                     if ($value == $this->INITIAL[$name])

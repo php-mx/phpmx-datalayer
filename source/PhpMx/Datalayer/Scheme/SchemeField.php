@@ -48,6 +48,9 @@ class SchemeField
     /** Define o valor padrão do campo (f_boolean, f_code, f_config, f_email, f_float, f_hash, f_ids, f_idx, f_int, f_json, f_string, f_text, f_time) */
     function default(mixed $default): static
     {
+        if (!$this->isType('boolean', 'code', 'config', 'email', 'float', 'hash', 'ids', 'idx', 'int', 'json', 'string', 'text', 'time'))
+            throw new Exception(prepare("Unsoported [detault] to fields [[#]]", $this->map['type']));
+
         $this->map['default'] = $default;
         if (is_null($default)) $this->null(true);
         return $this;
@@ -56,6 +59,9 @@ class SchemeField
     /** Define o tamanho maximo ( f_float, f_int, f_string) */
     function size(int $size): static
     {
+        if (!$this->isType('float', 'int', 'string'))
+            throw new Exception(prepare("Unsoported [size] to fields [[#]]", $this->map['type']));
+
         $this->map['size'] = max(0, intval($size));
         return $this;
     }
@@ -63,6 +69,9 @@ class SchemeField
     /** Define se o campo aceita valores nulos (f_code, f_email, f_float, f_hash, f_idx, f_int, f_string, f_time) */
     function null(bool $null): static
     {
+        if (!$this->isType('code', 'email', 'float', 'hash', 'idx', 'int', 'string', 'time'))
+            throw new Exception(prepare("Unsoported [null] to fields [[#]]", $this->map['type']));
+
         $this->map['null'] = boolval($null);
         return $this;
     }
@@ -70,14 +79,20 @@ class SchemeField
     /** Define se o campo deve ser indexado (f_boolean, f_code, f_email, f_float, f_hash, f_idx, f_int, f_string, f_time) */
     function index(bool $index): static
     {
+        if (!$this->isType('boolean', 'code', 'email', 'float', 'hash', 'idx', 'int', 'string', 'time'))
+            throw new Exception(prepare("Unsoported [index] to fields [[#]]", $this->map['type']));
+
         if (!$index) $this->indexUnique(false);
         $this->map['index'] = $index;
         return $this;
     }
 
-    /** Define se o campo deve ser indexado com valor unico (f_boolean, f_code, f_email, f_float, f_hash, f_idx, f_int, f_string, f_time) */
+    /** Define se o campo deve ser indexado com valor unico (f_code, f_email, f_float, f_hash, f_idx, f_int, f_string, f_time) */
     function indexUnique(bool $index): static
     {
+        if (!$this->isType('code', 'email', 'float', 'hash', 'idx', 'int', 'string', 'time'))
+            throw new Exception(prepare("Unsoported [indexUnique] to fields [[#]]", $this->map['type']));
+
         if ($index) $this->index(true);
         $this->map['unique'] = $index;
         return $this;
@@ -86,42 +101,63 @@ class SchemeField
     /** Determina o valor máximo do campo (f_int, f_float) */
     function max(int $max): static
     {
+        if (!$this->isType('int', 'float'))
+            throw new Exception(prepare("Unsoported [max] to fields [[#]]", $this->map['type']));
+
         return $this->settings('min', num_positive($max));
     }
 
     /** Determina o valor minimo do campo (f_int, f_float) */
     function min(int $min): static
     {
+        if (!$this->isType('int', 'float'))
+            throw new Exception(prepare("Unsoported [min] to fields [[#]]", $this->map['type']));
+
         return $this->settings('min', num_positive($min));
     }
 
     /** Determina a forma de arredondamento do campo [-1:baixo,0:automático,1:cima] (f_int, f_float) */
     function round(int $round): static
     {
+        if (!$this->isType('int', 'float'))
+            throw new Exception(prepare("Unsoported [round] to fields [[#]]", $this->map['type']));
+
         return $this->settings('round', num_interval($round, -1, 1));
     }
 
     /** Determina quantas casas decimais o campo deve ter (f_float) */
     function decimal(int $decimal): static
     {
+        if (!$this->isType('float'))
+            throw new Exception(prepare("Unsoported [decimal] to fields [[#]]", $this->map['type']));
+
         return $this->settings('decimal', num_positive($decimal));
     }
 
     /** Determina a conexão referenciada pelo campo (f_idx, f_ids) */
     function datalayer(string $datalayer): static
     {
+        if (!$this->isType('idx', 'ids'))
+            throw new Exception(prepare("Unsoported [datalayer] to fields [[#]]", $this->map['type']));
+
         return $this->settings('datalayer', Datalayer::internalName($datalayer));
     }
 
     /** Determina a tabela referenciada pelo campo (f_idx, f_ids) */
     function table(string $table): static
     {
+        if (!$this->isType('idx', 'ids'))
+            throw new Exception(prepare("Unsoported [table] to fields [[#]]", $this->map['type']));
+
         return $this->settings('table', Datalayer::internalName($table));
     }
 
     /** Determina se o campo deve cortar conteúdo com mais caracteres que o permitido (f_string) */
     function crop(bool $crop): static
     {
+        if (!$this->isType('string'))
+            throw new Exception(prepare("Unsoported [crop] to fields [[#]]", $this->map['type']));
+
         return $this->settings('crop', $crop);
     }
 
@@ -336,5 +372,11 @@ class SchemeField
         $map['size'] = 11;
 
         return $map;
+    }
+
+    /** Verifica se o campo atual é de um dos tipos informados */
+    protected function isType(...$types): bool
+    {
+        return in_array($this->map['type'], $types);
     }
 }

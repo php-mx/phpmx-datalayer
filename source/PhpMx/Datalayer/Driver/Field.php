@@ -2,15 +2,19 @@
 
 namespace PhpMx\Datalayer\Driver;
 
+use Exception;
+
 abstract class Field
 {
+    protected string $NAME = '';
     protected mixed $VALUE = null;
     protected array $SETTINGS = [];
     protected mixed $DEFAULT = null;
     protected bool $NULLABLE = false;
 
-    final function __construct(bool $nullable, mixed $default, array $settings)
+    final function __construct(string $name, bool $nullable, mixed $default, array $settings)
     {
+        $this->NAME = $name;
         $this->NULLABLE = $nullable;
         $this->DEFAULT = $default;
         $this->SETTINGS = $settings;
@@ -35,8 +39,19 @@ abstract class Field
     }
 
     /** Retorna o valor do campo para ser usado no banco de dados */
-    function __internalValue()
+    function __internalValue(bool $validate = false)
     {
-        return $this->VALUE;
+        $value = $this->VALUE;
+
+        if ($validate) $this->validade($value);
+
+        return $value;
+    }
+
+    /** Verifica se o campo pode ser insetido no banco de dados */
+    protected function validade(mixed $value): void
+    {
+        if (!$this->NULLABLE && is_null($value))
+            throw new Exception("Not allowed null value to [$this->NAME]");
     }
 }

@@ -27,11 +27,13 @@ class FIds extends Field
     }
 
     /** Retorna o valor do campo para ser usado no banco de dados */
-    function __internalValue()
+    function __internalValue(bool $validate = false)
     {
         $value = parent::__internalValue();
 
         $value = implode(',', $value);
+
+        if ($validate) $this->validade($value);
 
         return $value;
     }

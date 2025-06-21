@@ -2,6 +2,8 @@
 
 namespace PhpMx\Datalayer\Driver\Field;
 
+use Exception;
+
 /** Armazena string de email */
 class FEmail extends FString
 {
@@ -15,5 +17,14 @@ class FEmail extends FString
         }
 
         return parent::set($value);
+    }
+
+    /** Verifica se o campo pode ser insetido no banco de dados */
+    protected function validade(mixed $value): void
+    {
+        parent::validade($value);
+
+        if (!is_null($value) && !filter_var($value, FILTER_VALIDATE_EMAIL))
+            throw new Exception("The value is not a valid email [$this->NAME]");
     }
 }
