@@ -1,8 +1,6 @@
 # Funções
 
-Este documento lista as funções globais utilitárias disponíveis no PHPMX, definidas em `/helper/function`.
-
----
+## Este documento lista as funções globais utilitárias disponíveis no PHPMX, definidas em `/helper/function`.
 
 ## is_idKey
 

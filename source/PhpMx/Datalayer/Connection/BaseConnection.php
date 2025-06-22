@@ -21,7 +21,7 @@ abstract class BaseConnection
     abstract protected function load();
 
     /** Retorna a instancia PDO da conexão */
-    abstract protected function pdo(): PDO;
+    abstract protected function &pdo(): PDO;
 
     /** Query para criação de tabelas */
     abstract protected function schemeQueryCreateTable(string $name, ?string $comment, array $fields): array;
