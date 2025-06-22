@@ -13,6 +13,8 @@
             "": "source/"
         },
         "files": [
+            "helper/function/idkey.php",
+            "helper/function/syncIds.php",
             "helper/script/env.php",
             "helper/script/path.php"
         ]
