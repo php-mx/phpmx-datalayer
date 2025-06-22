@@ -4,6 +4,24 @@ O modo nativo do datalayer é quando o controle total do banco de dados passa a 
 
 ---
 
+## Migrations
+
+O primeiro passo para usar o modo nativo é configurar as migrations do seu projeto. Migrations são arquivos que descrevem, de forma incremental, as alterações de estrutura do banco de dados (criação de tabelas, campos, índices, relacionamentos, etc). Elas permitem versionar, automatizar e garantir a evolução consistente do schema.
+
+- [migration](./resource/migration.md)
+
+---
+
+## Drivers
+
+Após criar as migrations, o próximo passo é gerar os drivers do seu projeto. Drivers são a camada de model do datalayer: representam as tabelas, campos, relacionamentos e regras de negócio da sua aplicação. Eles são gerados e atualizados automaticamente a partir das migrations, por meio de um comando no terminal, garantindo que o código e o banco estejam sempre sincronizados.
+
+Para entender como criar, atualizar e utilizar os drivers, consulte:
+
+- [driver](./resource/driver.md)
+
+---
+
 ## Documentação
 
 - **Helper**

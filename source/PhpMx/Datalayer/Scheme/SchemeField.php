@@ -45,10 +45,10 @@ class SchemeField
         return $this;
     }
 
-    /** Define o valor padrão do campo (f_boolean, f_code, f_config, f_email, f_float, f_hash, f_ids, f_idx, f_int, f_json, f_string, f_text, f_time) */
+    /** Define o valor padrão do campo (f_boolean, f_code, f_config, f_email, f_float, f_hash, f_idx, f_int, f_json, f_string, f_text, f_time) */
     function default(mixed $default): static
     {
-        if (!$this->isType('boolean', 'code', 'config', 'email', 'float', 'hash', 'ids', 'idx', 'int', 'json', 'string', 'text', 'time'))
+        if (!$this->isType('boolean', 'code', 'config', 'email', 'float', 'hash', 'idx', 'int', 'json', 'string', 'text', 'time'))
             throw new Exception(prepare("Unsoported [detault] to fields [[#]]", $this->map['type']));
 
         $this->map['default'] = $default;
@@ -291,14 +291,7 @@ class SchemeField
         $map['settings']['datalayer'] = Datalayer::internalName($map['settings']['datalayer']);
         $map['settings']['table'] = Datalayer::internalName($map['settings']['table']);
 
-        if (isset($map['default'])) {
-            if (is_stringable($map['default']))
-                $map['default'] = explode(',', $map['default']);
-            $map['default'] = array_filter($map['default'], fn($v) => is_int($v));
-        }
-
-        $map['default'] = $map['default'] ?? [];
-        $map['default'] = implode(',', $map['default']);
+        $map['default'] = '';
 
         return $map;
     }
