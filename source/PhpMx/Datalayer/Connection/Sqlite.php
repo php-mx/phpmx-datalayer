@@ -47,7 +47,7 @@ class Sqlite extends BaseConnection
     }
 
     /** Retorna a instancia PDO da conexão */
-    protected function pdo(): PDO
+    protected function &pdo(): PDO
     {
         if (is_array($this->instancePDO)) {
             log_add('datalayer.start', '[#] sqlite', [Datalayer::externalName($this->dbName, 'Db')], function () {

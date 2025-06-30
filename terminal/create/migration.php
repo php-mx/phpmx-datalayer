@@ -1,6 +1,5 @@
 <?php
 
-use PhpMx\Datalayer;
 use PhpMx\File;
 use PhpMx\Import;
 use PhpMx\Path;

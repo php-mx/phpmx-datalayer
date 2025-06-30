@@ -22,6 +22,6 @@
     "require": {
         "ext-pdo_mysql": "*",
         "ext-pdo_sqlite": "*",
-        "phpmx/core": "^1.0"
+        "phpmx/core": "^1.1"
     }
 }
