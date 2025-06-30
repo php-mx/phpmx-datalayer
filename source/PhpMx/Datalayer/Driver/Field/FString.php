@@ -23,4 +23,9 @@ class FString extends Field
 
         return parent::set($value);
     }
+
+    function __toString()
+    {
+        return $this->get();
+    }
 }

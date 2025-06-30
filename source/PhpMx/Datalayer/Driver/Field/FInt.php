@@ -23,4 +23,9 @@ class FInt extends Field
 
         return parent::set($value);
     }
+
+    function __toString()
+    {
+        return strval($this->get());
+    }
 }

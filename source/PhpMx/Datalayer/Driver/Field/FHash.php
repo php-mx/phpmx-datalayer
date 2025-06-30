@@ -24,4 +24,9 @@ class FHash extends Field
 
         return $value == $this->VALUE;
     }
+
+    function __toString()
+    {
+        return $this->get();
+    }
 }

@@ -21,4 +21,9 @@ class FCode extends Field
     {
         return Code::compare(Code::on($value), $this->get());
     }
+
+    function __toString()
+    {
+        return $this->get();
+    }
 }

@@ -27,4 +27,9 @@ class FEmail extends FString
         if (!is_null($value) && !filter_var($value, FILTER_VALIDATE_EMAIL))
             throw new Exception("The value is not a valid email [$this->NAME]");
     }
+
+    function __toString()
+    {
+        return $this->get();
+    }
 }
