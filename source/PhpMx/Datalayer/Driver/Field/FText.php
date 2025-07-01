@@ -18,6 +18,6 @@ class FText extends Field
 
     function __toString()
     {
-        return $this->get();
+        return strval($this->get());
     }
 }

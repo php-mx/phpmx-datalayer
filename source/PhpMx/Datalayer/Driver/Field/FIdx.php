@@ -119,4 +119,9 @@ class FIdx extends Field
     {
         return $this->_record()->$name(...$arguments);
     }
+
+    function __toString()
+    {
+        return strval($this->get());
+    }
 }
