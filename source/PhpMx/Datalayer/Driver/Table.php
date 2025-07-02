@@ -22,24 +22,41 @@ abstract class Table
     protected $ACTIVE;
 
     /** Retorna o esquema de um registro */
-    final function getSchemeOne(array $scheme = [], ...$args): array
+    final function getOneScheme(array $scheme = [], ...$args): array
     {
-        $record = $this->getOne(...$args);
-        return $record->_scheme($scheme);
+        return $this->getOne(...$args)->_scheme($scheme);
     }
 
     /** Retorna o esquema de um registro baseando-se em uma idKey */
-    final function getSchemeOneKey(array $scheme = [], ?string $idKey = null, ?string $errMessage = null, int $errCode = 404): array
+    final function getOneKeyScheme(array $scheme = [], ?string $idKey = null, ?string $errMessage = null, int $errCode = 404): array
     {
-        $record = $this->getOneKey($idKey, $errMessage, $errCode);
-        return $record->_scheme($scheme);
+        return $this->getOneKey($idKey, $errMessage, $errCode)->_scheme($scheme);
     }
 
     /** Retorna um array com esquemas de registros */
-    final function getSchemeAll(array $scheme = [], ...$args): array
+    final function getAllScheme(array $scheme = [], ...$args): array
     {
         $records = $this->getAll(...$args);
         return array_map(fn($record) => $record->_scheme($scheme), $records);
+    }
+
+    /** Retorna o esquema completo de um registro */
+    final function getOneSchemeAll(array $fieldsRemove = [], ...$args): array
+    {
+        return $this->getOne(...$args)->_schemeAll($fieldsRemove);
+    }
+
+    /** Retorna o esquema completo de um registro baseando-se em uma idKey */
+    final function getOneKeySchemeAll(array $fieldsRemove = [], ?string $idKey = null, ?string $errMessage = null, int $errCode = 404): array
+    {
+        return $this->getOneKey($idKey, $errMessage, $errCode)->_schemeAll($fieldsRemove);
+    }
+
+    /** Retorna um array com esquemas completos de registros */
+    final function getAllSchemeAll(array $fieldsRemove = [], ...$args): array
+    {
+        $records = $this->getAll(...$args);
+        return array_map(fn($record) => $record->_schemeAll($fieldsRemove), $records);
     }
 
     /** Retorna o registro marcado como ativo */
