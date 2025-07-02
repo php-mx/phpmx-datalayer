@@ -74,7 +74,7 @@ abstract class Record
     final function _schemeValue(string $field)
     {
         $field = str_starts_with($field, '_') ? $field : strToCamelCase($field);
-        return method_exists($this, "_scheme_$field") ? $this->{"_scheme_$field"}() : $this->_array($field)[$field];
+        return method_exists($this, "get_$field") ? $this->{"get_$field"}() : $this->_array($field)[$field];
     }
 
     /** Retorna o esquema dos campos do registro tratados em forma de array */
@@ -100,8 +100,8 @@ abstract class Record
         $fields = array_flip($fields);
 
         foreach (get_class_methods(static::class) as $class) {
-            if (str_starts_with($class, '_scheme_')) {
-                $fieldName = substr($class, 8);
+            if (str_starts_with($class, 'get_')) {
+                $fieldName = substr($class, 4);
                 if (!is_array($fields[$fieldName]))
                     $fields[$fieldName] = count($fields);
             }
@@ -118,7 +118,7 @@ abstract class Record
     }
 
     /** Retorna o esquema de _changed */
-    final protected function _scheme__changed()
+    final protected function get___changed()
     {
         return $this->_changed();
     }
