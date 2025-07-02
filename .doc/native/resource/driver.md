@@ -59,7 +59,7 @@ $ativos = DbMain::$user->get('status', 'ativo');
 O arquivo `Model/Db<NomeDaConexao>/table/Table<NomeDaTabela>.php` representa a tabela do banco e centraliza as operações e queries sobre ela. Por padrão, as classes Table são geradas vazias, herdando toda a lógica do driver correspondente.
 
 - Cada tabela implementa métodos prontos para uso, como:
-  - `getOne`, `getAll`, `active`, `count`, `check`, `getSchemeOne`, `getSchemeAll`, `getOneKey`, entre outros.
+  - `getOne`, `getAll`, `active`, `count`, `check`, `getOneScheme`, `getOneSchemeAll`, `getOneKey`, entre outros.
 - Os métodos `getOne` e `getAll` também aceitam um objeto Query Builder como parâmetro, permitindo buscas avançadas e customizadas de forma segura (os hooks e validações do driver continuam sendo executados normalmente).
 - Você pode implementar métodos customizados na sua classe Table para facilitar buscas ou operações específicas. Se não precisar de buscas diferentes, basta usar os métodos já implementados.
 - O objeto estático da tabela, retornado pelo DbMain, permite acessar todos esses métodos facilmente.
@@ -82,11 +82,11 @@ $total = DbMain::$user->count(['status' => 'ativo']);
 // Verificar se existe pelo menos um registro com determinado critério
 $existe = DbMain::$user->check(['email' => 'teste@exemplo.com']);
 
-// Buscar esquema de um registro
-$esquema = DbMain::$user->getSchemeOne([], 1);
+// Buscar esquema completo de um registro
+$esquema = DbMain::$user->getOneSchemeAll([], 1);
 
-// Buscar esquema de todos os registros
-$esquemas = DbMain::$user->getSchemeAll();
+// Buscar esquema completo de todos os registros
+$esquemas = DbMain::$user->getAllSchemeAll();
 
 // Buscar por idKey
 $registro = DbMain::$user->getOneKey('idKey');
@@ -203,12 +203,12 @@ $dadosUsuarios = array_map(fn($u) => $u->_scheme(['idKey', 'name', 'email']), $u
 
 ### Manipulando e customizando o retorno do scheme
 
-Você pode customizar o valor exportado de qualquer campo, inclusive criar campos virtuais que não existem no banco, apenas implementando um método protegido no seu Record com o padrão `_scheme_<nomeDoCampo>`. Assim, ao exportar o scheme, esse método será chamado automaticamente para tratar o valor antes de exportar.
+Você pode customizar o valor exportado de qualquer campo, inclusive criar campos virtuais que não existem no banco, apenas implementando um método protegido no seu Record com o padrão `get_<nomeDoCampo>`. Assim, ao exportar o scheme, esse método será chamado automaticamente para tratar o valor antes de exportar.
 
 Isso permite, por exemplo, exportar um campo calculado como `idade`, mesmo que ele não exista no banco, apenas implementando:
 
 ```php
-protected function _scheme_idade() {
+function get_idade() {
     return calcularIdade($this->dataNascimento());
 }
 ```
@@ -216,13 +216,13 @@ protected function _scheme_idade() {
 Outro exemplo, para exportar o nome em maiúsculo:
 
 ```php
-protected function _scheme_name() {
+function get_name() {
     return strtoupper($this->name());
 }
 ```
 
 - O uso do `scheme` é recomendado para exportação de dados, respostas de API e integração, pois garante que apenas os campos desejados serão expostos.
-- Para customizar o valor exportado de um campo (existente ou virtual), basta implementar o método protegido `_scheme_<nomeDoCampo>` no seu Record.
+- Para customizar o valor exportado de um campo (existente ou virtual), basta implementar o método `get_<nomeDoCampo>` no seu Record.
 - Por padrão, o ID real do banco não é exposto, aumentando a segurança dos dados.
 
 ## Registro ativo (active)
