@@ -118,7 +118,7 @@ abstract class Record
     }
 
     /** Retorna o esquema de _changed */
-    final protected function get___changed()
+    final protected function get__changed()
     {
         return $this->_changed();
     }
