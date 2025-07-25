@@ -1,12 +1,5 @@
-/.env
-/vendor
+/mx
+/.conf
 /composer.lock
-
-/migration
-/source/Model
-/storage/sqlite
-/storage/scheme/db*
-
-#phpmx-core
-/storage/cache
-/storage/certificate
+/system/datalayer
+/library/sqlite
