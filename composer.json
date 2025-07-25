@@ -1,6 +1,6 @@
 {
     "name": "phpmx/datalayer",
-    "description": "Camada de conexão com banco de dados para aplicações phpMX",
+    "description": "Camada de persistência e abstração de banco de dados para aplicações PHPMX",
     "license": "MIT",
     "authors": [
         {
