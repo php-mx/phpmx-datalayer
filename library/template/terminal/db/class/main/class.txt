@@ -1,0 +1,7 @@
+<?php
+
+namespace [#namespace];
+
+abstract class [#className] extends \[#namespace]\Driver\Driver[#className]
+{
+}
