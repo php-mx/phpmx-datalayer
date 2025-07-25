@@ -14,6 +14,8 @@
             "": "class/"
         },
         "files": [
+            "system/helper/function/idkey.php",
+            "system/helper/function/is.php",
             "system/helper/script/path.php"
         ]
     },
