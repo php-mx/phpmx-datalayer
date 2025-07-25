@@ -1,5 +1,12 @@
-/mx
+
 /.conf
 /composer.lock
 /system/datalayer
 /library/sqlite
+
+# MX CORE
+
+/.env
+/vendor
+/library/cache
+/library/certificate
