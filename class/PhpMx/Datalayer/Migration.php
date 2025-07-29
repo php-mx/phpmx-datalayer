@@ -7,6 +7,7 @@ use PhpMx\Datalayer\Scheme\Scheme;
 use PhpMx\Datalayer\Scheme\SchemeField;
 use PhpMx\Datalayer\Scheme\SchemeTable;
 
+/** Classe base para definir migrations de banco com suporte a tipagem e aplicação via Scheme. */
 abstract class Migration
 {
     protected Scheme $scheme;

@@ -6,6 +6,7 @@ use PhpMx\Datalayer;
 use PhpMx\Datalayer\Scheme\SchemeMap;
 use PhpMx\Datalayer\Scheme\SchemeTable;
 
+/** Define e aplica alterações de esquema no banco, como criação, modificação e remoção de tabelas e campos. */
 class Scheme
 {
     protected SchemeMap $map;

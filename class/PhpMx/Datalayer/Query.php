@@ -7,6 +7,7 @@ use PhpMx\Datalayer\Query\Insert;
 use PhpMx\Datalayer\Query\Select;
 use PhpMx\Datalayer\Query\Update;
 
+/** Factory para gerar queries SQL (Select, Insert, Update, Delete). */
 abstract class Query
 {
     /** Retorna uma instancia de query do tipo Delete */

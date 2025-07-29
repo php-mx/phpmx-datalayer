@@ -2,6 +2,7 @@
 
 namespace PhpMx\Datalayer\Query;
 
+/** Monta e executa instruções SQL do tipo DELETE com cláusulas WHERE e ORDER BY. */
 class Delete extends BaseQuery
 {
     protected array $order = [];

@@ -4,6 +4,7 @@ namespace PhpMx\Datalayer\Driver;
 
 use Exception;
 
+/** Campo base de um registro, contendo valor, definição de nulidade e validação para persistência. */
 abstract class Field
 {
     protected string $NAME = '';

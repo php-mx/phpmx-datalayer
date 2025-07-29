@@ -4,6 +4,7 @@ namespace PhpMx\Datalayer\Query;
 
 use Error;
 
+/** Monta e executa instruções SQL do tipo UPDATE com suporte a where, whereIn e whereNull. */
 class Update extends BaseQuery
 {
     protected array $values = [];

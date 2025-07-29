@@ -10,6 +10,7 @@ use PhpMx\Dir;
 use PhpMx\File;
 use PhpMx\Log;
 
+/** Driver de conexão SQLite. */
 class Sqlite extends BaseConnection
 {
     protected string $pdoDriver = 'pdo_sqlite';

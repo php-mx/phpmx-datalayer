@@ -4,9 +4,9 @@ namespace PhpMx\Datalayer\Scheme;
 
 use PhpMx\Datalayer;
 
+/** Representa a definição de uma tabela no esquema do banco, permitindo alterações e remoções controladas. */
 class SchemeTable
 {
-
     protected $name;
     protected $map;
 

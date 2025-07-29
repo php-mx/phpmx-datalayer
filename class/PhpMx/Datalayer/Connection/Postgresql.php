@@ -10,6 +10,7 @@ use PhpMx\Datalayer\Query;
 use PhpMx\Datalayer\Query\BaseQuery;
 use PhpMx\Log;
 
+/** Driver de conexão PostgreSql. */
 class Postgresql extends BaseConnection
 {
     protected string $pdoDriver = 'pdo_pgsql';

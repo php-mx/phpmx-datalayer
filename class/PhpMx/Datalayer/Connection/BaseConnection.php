@@ -6,10 +6,10 @@ use Exception;
 use PDO;
 use PhpMx\Datalayer\Query;
 use PhpMx\Datalayer\Query\BaseQuery;
-use PhpMx\Json;
 use PhpMx\Log;
 use Throwable;
 
+/** Base para drivers de conexão. */
 abstract class BaseConnection
 {
     protected string $dbName;

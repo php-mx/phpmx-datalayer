@@ -9,6 +9,7 @@ use PhpMx\Datalayer;
 use PhpMx\Datalayer\Query;
 use PhpMx\Log;
 
+/** Driver de conexão Mysql. */
 class Mysql extends BaseConnection
 {
     protected string $pdoDriver = 'pdo_mysql';

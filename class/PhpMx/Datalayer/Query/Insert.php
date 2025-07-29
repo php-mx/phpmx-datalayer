@@ -4,6 +4,7 @@ namespace PhpMx\Datalayer\Query;
 
 use Error;
 
+/** Monta e executa instruções SQL do tipo INSERT, com suporte a múltiplos registros e parâmetros nomeados. */
 class Insert extends BaseQuery
 {
     protected array $columns = [];

@@ -6,6 +6,7 @@ use Exception;
 use PhpMx\Datalayer;
 use PhpMx\Mx5;
 
+/** Representa um campo da tabela no esquema de banco de dados, permitindo configuração detalhada. */
 class SchemeField
 {
     protected $name;

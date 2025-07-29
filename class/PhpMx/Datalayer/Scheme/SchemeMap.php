@@ -4,6 +4,7 @@ namespace PhpMx\Datalayer\Scheme;
 
 use PhpMx\Datalayer;
 
+/** Representa o mapa de esquema do banco, permitindo a leitura e atualização de tabelas, campos e índices. */
 class SchemeMap
 {
     final const TABLE_MAP = [

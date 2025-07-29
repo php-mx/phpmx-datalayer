@@ -10,6 +10,7 @@ use PhpMx\Import;
 use PhpMx\Log;
 use PhpMx\Terminal;
 
+/** Terminal trait para aplicar e reverter migrations de banco via datalayer. */
 trait MigrationTerminalTrait
 {
     protected static $dbName;

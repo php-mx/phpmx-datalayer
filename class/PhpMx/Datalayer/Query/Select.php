@@ -2,6 +2,7 @@
 
 namespace PhpMx\Datalayer\Query;
 
+/** Monta e executa instruções SQL do tipo SELECT com suporte a fields, where, order, group e paginação. */
 class Select extends BaseQuery
 {
     protected array $fields = [];

@@ -10,6 +10,7 @@ use Error;
 use Exception;
 use PhpMx\Log;
 
+/** Classe base para drivers de tabela, responsável por consulta, cache e conversão de registros em objetos. */
 abstract class Table
 {
     protected $DATALAYER;

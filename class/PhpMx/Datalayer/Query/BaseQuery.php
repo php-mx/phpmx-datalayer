@@ -5,6 +5,7 @@ namespace PhpMx\Datalayer\Query;
 use Error;
 use PhpMx\Datalayer;
 
+/** Classe base para construção e execução de queries SQL (SELECT, UPDATE, INSERT, DELETE). */
 abstract class BaseQuery
 {
     protected array $data = [];

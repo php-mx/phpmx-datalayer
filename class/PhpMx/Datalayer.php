@@ -9,6 +9,7 @@ use PhpMx\Datalayer\Connection\Mysql;
 use PhpMx\Datalayer\Connection\Postgresql;
 use PhpMx\Datalayer\Connection\Sqlite;
 
+/** Gerencia conexões reutilizáveis com múltiplos bancos de dados. */
 abstract class Datalayer
 {
     /** @var BaseConnection[] */
