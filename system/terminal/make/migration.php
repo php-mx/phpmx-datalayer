@@ -19,8 +19,8 @@ return new class extends Terminal {
 
         $migrationName = $migrationName ? strToSnakeCase("$time $migrationName") : $time;
 
-        $migrationFile = path('system/datalayer', $migrationDbName, 'migration', $migrationName);
-        $migrationFile = File::setEx($migrationFile, 'php');
+        $file = path('system/datalayer', $migrationDbName, 'migration', $migrationName);
+        $file = File::setEx($file, 'php');
 
         $template = Path::seekForFile('library/template/terminal/migration.txt');
         $template = Import::content($template);
@@ -29,8 +29,9 @@ return new class extends Terminal {
             'name' => $migrationName,
         ]);
 
-        File::create($migrationFile, $template);
+        File::create($file, $template);
 
         self::echo('Migration [[#]] created successfully', $migrationName);
+        self::echo("[$file]");
     }
 };
