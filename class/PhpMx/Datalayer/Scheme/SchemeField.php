@@ -57,7 +57,7 @@ class SchemeField
         return $this;
     }
 
-    /** Define o tamanho maximo ( fFloat, fInt, fString) */
+    /** Define o tamanho maximo (fFloat, fInt, fString) */
     function size(int $size): static
     {
         if (!$this->isType('float', 'int', 'string'))
@@ -67,7 +67,7 @@ class SchemeField
         return $this;
     }
 
-    /** Define se o campo aceita valores nulos ( fEmail, fFloat, fMd5, fMx5, fIdx, fInt, fString, fTime) */
+    /** Define se o campo aceita valores nulos (fEmail, fFloat, fMd5, fMx5, fIdx, fInt, fString, fTime) */
     function null(bool $null): static
     {
         if (!$this->isType('email', 'float', 'md5', 'mx5', 'idx', 'int', 'string', 'time'))
@@ -213,7 +213,8 @@ class SchemeField
     /** Retorna o mapa de campos FLOAT */
     protected function __mapFloat(array $map): array
     {
-        $map['size'] = $map['size'] ?? 10;
+        $map['settings']['size'] = $map['size'] ?? 10;
+        $map['size'] = null;
 
         if (!isset($map['settings']['decimal']))
             $map['settings']['decimal'] = 2;
@@ -234,7 +235,8 @@ class SchemeField
     /** Retorna o mapa de campos INT */
     protected function __mapInt(array $map): array
     {
-        $map['size'] = $map['size'] ?? 10;
+        $map['settings']['size'] = $map['size'] ?? 10;
+        $map['size'] = null;
 
         return $map;
     }
