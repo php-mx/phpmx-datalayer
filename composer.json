@@ -8,7 +8,6 @@
             "email": "contatoadmx@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "": "class/"
@@ -20,7 +19,7 @@
         ]
     },
     "require": {
-        "phpmx/core": "dev-main"
+        "phpmx/core": "^2.0"
     },
     "suggest": {
         "ext-pdo_mysql": "Required if you intend to use MySQL or MariaDB connections.",
