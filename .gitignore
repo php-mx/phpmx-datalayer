@@ -1,5 +1,4 @@
 /mx
-/.env
 /.conf
 /composer.lock
 /system/datalayer
