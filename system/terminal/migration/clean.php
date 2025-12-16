@@ -7,7 +7,7 @@ return new class extends Terminal {
 
     use MigrationTerminalTrait;
 
-    function __invoke($dbName)
+    function __invoke($dbName = 'main')
     {
         while (self::down($dbName));
     }

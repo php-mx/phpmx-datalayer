@@ -14,7 +14,7 @@ return new class extends Terminal {
     protected string $path = '';
     protected array $map = [];
 
-    function __invoke($dbName)
+    function __invoke($dbName = 'main')
     {
         self::echo('Installing drivers');
         self::echoLine();

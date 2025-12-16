@@ -7,7 +7,7 @@ use PhpMx\Terminal;
 
 return new class extends Terminal {
 
-    function __invoke(string $dbName, string $migrationName)
+    function __invoke(string $migrationName, string $dbName = 'main')
     {
         $migrationDbName = strToCamelCase($dbName);
 
