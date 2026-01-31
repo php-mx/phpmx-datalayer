@@ -1,29 +1,30 @@
 {
-    "name": "phpmx/datalayer",
-    "description": "Camada de persistência e abstração de banco de dados para aplicações PHPMX",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "André Ricardo",
-            "email": "contatoadmx@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": {
-            "": "class/"
-        },
-        "files": [
-            "system/helper/function/idkey.php",
-            "system/helper/function/is.php",
-            "system/helper/script/path.php"
-        ]
-    },
-    "require": {
-        "phpmx/core": "^2.0"
-    },
-    "suggest": {
-        "ext-pdo_mysql": "Required if you intend to use MySQL or MariaDB connections.",
-        "ext-pdo_sqlite": "Required if you intend to use SQLite connections.",
-        "ext-pdo_pgsql": "Required if you intend to use PostgreSQL connections."
+  "name": "phpmx/datalayer",
+  "description": "Camada de persistência e abstração de banco de dados para aplicações PHPMX",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "André Ricardo",
+      "email": "contatoadmx@gmail.com"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "": "class/"
+    },
+    "files": [
+      "system/helper/function/idkey.php",
+      "system/helper/function/is.php",
+      "system/helper/script/path.php"
+    ]
+  },
+  "require": {
+    "phpmx/core": "dev-main"
+  },
+  "suggest": {
+    "ext-pdo_mysql": "Required if you intend to use MySQL or MariaDB connections.",
+    "ext-pdo_sqlite": "Required if you intend to use SQLite connections.",
+    "ext-pdo_pgsql": "Required if you intend to use PostgreSQL connections."
+  }
 }

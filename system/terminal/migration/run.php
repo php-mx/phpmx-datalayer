@@ -3,7 +3,7 @@
 use PhpMx\Datalayer\MigrationTerminalTrait;
 use PhpMx\Terminal;
 
-return new class extends Terminal {
+return new class {
 
     use MigrationTerminalTrait;
 

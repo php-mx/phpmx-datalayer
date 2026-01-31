@@ -5,7 +5,7 @@ use PhpMx\Datalayer\Query;
 use PhpMx\Json;
 use PhpMx\Terminal;
 
-return new class extends Terminal {
+return new class {
 
     function __invoke($dbName = 'main', $tables = '*')
     {
@@ -19,13 +19,12 @@ return new class extends Terminal {
 
         $map = Datalayer::get($dbName)->getConfig('__dbmap') ?? [];
 
-        self::echo("Starting import from [$file] to [$dbName]");
-        self::echoLine();
+        Terminal::echo("Starting import from [#whiteD:$file] to [#greenB:$dbName]");
 
         $querys = [];
         foreach ($tables as $table) {
             if (isset($map[$table])) {
-                self::echo("| Prepare import table [$table]");
+                Terminal::echo("| Prepare import table [$table]");
                 if (isset($import[$table])) {
                     if (!empty($import[$table])) {
                         $update = [];
@@ -47,11 +46,10 @@ return new class extends Terminal {
             }
         }
 
-        self::echo("| Apply import");
+        Terminal::echo("| Apply import");
 
         Datalayer::get($dbName)->executeQueryList($querys);
 
-        self::echoLine();
-        self::echo("Import ended");
+        Terminal::echo("Import ended");
     }
 };

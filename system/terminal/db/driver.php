@@ -7,7 +7,7 @@ use PhpMx\Import;
 use PhpMx\Path;
 use PhpMx\Terminal;
 
-return new class extends Terminal {
+return new class {
 
     protected string $dbName = '';
     protected string $namespace = '';
@@ -16,8 +16,7 @@ return new class extends Terminal {
 
     function __invoke($dbName = 'main')
     {
-        self::echo('Installing drivers');
-        self::echoLine();
+        Terminal::echo('Installing drivers');
 
         $dbName = Datalayer::internalName($dbName);
 
@@ -36,7 +35,6 @@ return new class extends Terminal {
 
         $this->createDriver_database();
         $this->createClass_database();
-        self::echo(" [OK] datalayer ");
 
         foreach ($this->map as $tableName => $tableMap) {
             $this->createDriver_table($tableName);
@@ -44,11 +42,9 @@ return new class extends Terminal {
 
             $this->createClass_table($tableName);
             $this->createClass_record($tableName);
-            self::echo(" [OK] table $tableName");
         }
 
-        self::echoLine();
-        self::echo("Driver installed");
+        Terminal::echo("Driver installed");
     }
 
     protected function createDriver_database(): void
@@ -88,6 +84,7 @@ return new class extends Terminal {
         $content = $this->template('driver/main/class', $data);
 
         File::create($this->path . "/Driver/$fileName.php", $content, true);
+        Terminal::echo("[#greenD:#]", $this->path . "/Driver/$fileName.php");
     }
 
     protected function createDriver_table(string $tableName): void
@@ -111,6 +108,7 @@ return new class extends Terminal {
         $content = $this->template('driver/table/class', $data);
 
         File::create($this->path . "/Driver/$fileName.php", $content, true);
+        Terminal::echo("[#greenD:#]", $this->path . "/Driver/$fileName.php");
     }
 
     protected function createDriver_record(string $tableName, array $tableMap): void
@@ -220,6 +218,7 @@ return new class extends Terminal {
         $content = $this->template('driver/record/class', $data);
 
         File::create($this->path . "/Driver/$fileName.php", $content, true);
+        Terminal::echo("[#greenD:#]", $this->path . "/Driver/$fileName.php");
     }
 
     protected function createClass_database(): void
@@ -231,6 +230,7 @@ return new class extends Terminal {
         $content = $this->template('class/main/class', $data);
 
         File::create($this->path . "/$fileName.php", $content);
+        Terminal::echo("[#green:#]", $this->path . "/$fileName.php");
     }
 
     protected function createClass_table(string $tableName): void
@@ -249,6 +249,7 @@ return new class extends Terminal {
         $content = $this->template('class/table/class', $data);
 
         File::create($this->path . "/Table/$fileName.php", $content);
+        Terminal::echo("[#green:#]", $this->path . "/Table/$fileName.php");
     }
 
     protected function createClass_record(string $tableName): void
@@ -262,6 +263,7 @@ return new class extends Terminal {
         $content = $this->template('class/record/class', $data);
 
         File::create($this->path . "/Record/$fileName.php", $content);
+        Terminal::echo("[#green:#]", $this->path . "/Record/$fileName.php");
     }
 
     /** Retrona um teplate de driver */

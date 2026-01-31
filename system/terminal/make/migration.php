@@ -5,7 +5,7 @@ use PhpMx\Import;
 use PhpMx\Path;
 use PhpMx\Terminal;
 
-return new class extends Terminal {
+return new class {
 
     function __invoke(string $migrationName, string $dbName = 'main')
     {
@@ -31,7 +31,9 @@ return new class extends Terminal {
 
         File::create($file, $template);
 
-        self::echo('Migration [[#]] created successfully', $migrationName);
-        self::echo("[$file]");
+        Terminal::echo('Migration [#blueB:#] created successfully [#whiteD:#]', [
+            $migrationName,
+            $file
+        ]);
     }
 };

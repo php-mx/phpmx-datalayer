@@ -4,7 +4,7 @@ use PhpMx\Datalayer;
 use PhpMx\Json;
 use PhpMx\Terminal;
 
-return new class extends Terminal {
+return new class {
 
     function __invoke($dbName = 'main')
     {
@@ -16,6 +16,6 @@ return new class extends Terminal {
 
         Json::export($file, $map);
 
-        self::echo("[$dbName] map exported to [$file]");
+        Terminal::echo("[#green:$dbName] map exported to [#witeD:$file]");
     }
 };

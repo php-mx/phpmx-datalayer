@@ -5,7 +5,7 @@ use PhpMx\Datalayer\Query;
 use PhpMx\Json;
 use PhpMx\Terminal;
 
-return new class extends Terminal {
+return new class {
 
     function __invoke($dbName = 'main', $tables = '*')
     {
@@ -17,12 +17,11 @@ return new class extends Terminal {
 
         $file = path("system/datalayer/$dbName/scheme/data.json");
 
-        self::echo("Starting export from [$dbName] to [$file]");
-        self::echoLine();
+        Terminal::echo("Starting export from [#greenB:$dbName] to [#whiteD:$file]");
 
         $export = [];
         foreach ($tables as $table) {
-            self::echo("| Prepare export table [$table]");
+            Terminal::echo("Preparing [#greenB:$table]");
             if (isset($map[$table])) {
                 $export[$table] = Query::select($table)->dbName($dbName)->run();
             } else {
@@ -30,11 +29,10 @@ return new class extends Terminal {
             }
         }
 
-        self::echo("| Apply export");
+        Terminal::echo("Apply export");
 
         Json::export($file, $export);
 
-        self::echoLine();
-        self::echo("Export ended");
+        Terminal::echo("Export ended");
     }
 };

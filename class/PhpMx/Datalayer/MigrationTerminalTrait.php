@@ -100,7 +100,7 @@ trait MigrationTerminalTrait
         $logDdName = Datalayer::externalName(self::$dbName, 'db');
 
         Log::add("migration.$logAction", "$logDdName [$file]", function () use ($file, $mode) {
-            Terminal::echo("run [#action] [#file]", [
+            Terminal::echo("run [#green:#action] [#whiteD:#file]", [
                 'action' => $mode ? 'up' : 'down',
                 'file' => $file,
             ]);
@@ -142,7 +142,7 @@ trait MigrationTerminalTrait
                 self::lastId(-1);
                 return true;
             } else {
-                throw new Error("Migration file [$lasId] not found");
+                throw new Error("Migration file [#yellow:$lasId] not found");
             }
         }
 
