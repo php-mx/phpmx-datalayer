@@ -17,7 +17,7 @@ return new class {
 
         $tables = $tables == '*' ? array_keys($import) : explode(',', $tables);
 
-        $map = Datalayer::get($dbName)->getConfig('__dbmap') ?? [];
+        $map = Datalayer::get($dbName)->getConfigGroup('dbmap');
 
         Terminal::echol("Starting import from [#c:p,#] to [#c:p,#]", [$file, $dbName]);
 

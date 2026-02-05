@@ -11,7 +11,7 @@ return new class {
     {
         $dbName = Datalayer::internalName($dbName);
 
-        $map = Datalayer::get($dbName)->getConfig('__dbmap') ?? [];
+        $map = Datalayer::get($dbName)->getConfigGroup('dbmap');
 
         $tables = $tables == '*' ? array_keys($map) : explode(',', $tables);
 

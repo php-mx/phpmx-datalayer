@@ -20,7 +20,7 @@ return new class {
 
         $dbName = Datalayer::internalName($dbName);
 
-        $map = Datalayer::get($dbName)->getConfig('__dbmap') ?? [];
+        $map = Datalayer::get($dbName)->getConfigGroup('dbmap');
 
         $namespace = 'Model\\' . strToPascalCase("db $dbName");
 
