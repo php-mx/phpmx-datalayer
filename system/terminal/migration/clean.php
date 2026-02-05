@@ -1,11 +1,11 @@
 <?php
 
-use PhpMx\Datalayer\MigrationTerminalTrait;
+use PhpMx\Trait\TerminalMigrationTrait;
 
 /** Reverte todas as migrations executadas no banco de dados, retornando-o ao estado inicial */
 return new class {
 
-    use MigrationTerminalTrait;
+    use TerminalMigrationTrait;
 
     function __invoke($dbName = 'main')
     {

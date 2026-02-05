@@ -2,13 +2,13 @@
 
 use PhpMx\Trait\TerminalMigrationTrait;
 
-/** Executa todas as migrations pendentes no banco de dados até que o esquema esteja atualizado */
+/** Remove o nível de trava mais alto das migrations aplicadas no banco de dados */
 return new class {
 
     use TerminalMigrationTrait;
 
     function __invoke($dbName = 'main')
     {
-        while (self::up($dbName));
+        self::unlock($dbName);
     }
 };

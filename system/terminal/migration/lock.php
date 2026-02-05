@@ -2,13 +2,13 @@
 
 use PhpMx\Trait\TerminalMigrationTrait;
 
-/** Executa todas as migrations pendentes no banco de dados até que o esquema esteja atualizado */
+/** Trava todas as migrations executadas em um novo nível de proteção */
 return new class {
 
     use TerminalMigrationTrait;
 
     function __invoke($dbName = 'main')
     {
-        while (self::up($dbName));
+        self::lock($dbName);
     }
 };

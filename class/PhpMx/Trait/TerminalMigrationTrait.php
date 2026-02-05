@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpMx\Datalayer;
+namespace PhpMx\Trait;
 
 use Error;
 use PhpMx\Datalayer;
@@ -11,7 +11,7 @@ use PhpMx\Log;
 use PhpMx\Terminal;
 
 /** Terminal trait para aplicar e reverter migrations de banco via datalayer. */
-trait MigrationTerminalTrait
+trait TerminalMigrationTrait
 {
     protected static $dbName;
     protected static $path;
@@ -40,6 +40,53 @@ trait MigrationTerminalTrait
         return $result;
     }
 
+    static function lock($dbName = null)
+    {
+        self::loadDatalayer($dbName);
+        $datalayer = Datalayer::get(self::$dbName);
+        $executed = $datalayer->getConfigGroup('migration');
+
+        $maxLock = 0;
+        foreach ($executed as $m) $maxLock = max($maxLock, $m['lock'] ?? 0);
+
+        $newLock = $maxLock + 1;
+        $changed = false;
+
+        foreach ($executed as &$m)
+            if (($m['lock'] ?? 0) === 0) {
+                $m['lock'] = $newLock;
+                $changed = true;
+            }
+
+
+        if ($changed) {
+            $datalayer->setConfigGroup('migration', $executed);
+            Terminal::echol("[#c:s,Lock level $newLock applied to all current migrations]");
+        }
+    }
+
+    static function unlock($dbName = null)
+    {
+        self::loadDatalayer($dbName);
+        $datalayer = Datalayer::get(self::$dbName);
+        $executed = $datalayer->getConfigGroup('migration');
+
+        $maxLock = 0;
+        foreach ($executed as $m) $maxLock = max($maxLock, $m['lock'] ?? 0);
+
+        if ($maxLock === 0) {
+            Terminal::echol("[#c:w,No locks found to release]");
+            return;
+        }
+
+        foreach ($executed as &$m)
+            if (($m['lock'] ?? 0) === $maxLock)
+                $m['lock'] = 0;
+
+        $datalayer->setConfigGroup('migration', $executed);
+        Terminal::echol("[#c:s,Lock level $maxLock released]");
+    }
+
     protected static function loadDatalayer($dbName)
     {
         Datalayer::get($dbName);
@@ -64,29 +111,38 @@ trait MigrationTerminalTrait
     }
 
     /** Retorna/Altera o ID da ultima migration executada */
-    protected static function lastId(?int $id = null): int
+    protected static function lastId(?string $id = null): string
     {
         $datalayer = Datalayer::get(self::$dbName);
         $executed = $datalayer->getConfigGroup('migration');
 
         if (!is_null($id)) {
-            if ($id > 0) {
-                $executed[] = $id;
+            if ($id != "-1") {
+                $executed[$id] = ['lock' => 0];
             } else {
-                $executed = array_slice($executed, 0, $id);
+                $lastId = array_key_last($executed);
+
+                // Se estiver travado, apenas avisamos e NÃO removemos do banco
+                if ($lastId && ($executed[$lastId]['lock'] ?? 0) > 0) {
+                    // Retornamos o ID para o executePrev saber quem ignorar
+                    return $lastId;
+                }
+
+                unset($executed[$lastId]);
             }
+            $datalayer->setConfigGroup('migration', $executed);
         }
 
-        $datalayer->setConfigGroup('migration', $executed);
-
-        return array_pop($executed) ?? 0;
+        $keys = array_keys($executed);
+        return (string) (array_pop($keys) ?? '');
     }
 
     /** Retorna array com todos os IDs aplicados */
     protected static function getAppliedMigrations(): array
     {
         $datalayer = Datalayer::get(self::$dbName);
-        return $datalayer->getConfigGroup('migration');
+        $data = $datalayer->getConfigGroup('migration');
+        return array_keys($data);
     }
 
     /** Executa um arquivo de migration */
@@ -96,10 +152,12 @@ trait MigrationTerminalTrait
         $logDdName = Datalayer::externalName(self::$dbName, 'db');
 
         Log::add("migration.$logAction", "$logDdName [$file]", function () use ($file, $mode) {
-            Terminal::echol("run [#c:s,#action] [#c:p,#file]", [
-                'action' => $mode ? 'up' : 'down',
-                'file' => $file,
-            ]);
+
+            if ($mode)
+                Terminal::echol("run [#c:s,up] [#c:p,#]", $file);
+
+            if (!$mode)
+                Terminal::echol("run [#c:w,down] [#c:p,#]", $file);
 
             $class = substr($file, 6, -4);
             $class = str_replace_all("/", "\\", $class);
@@ -128,20 +186,29 @@ trait MigrationTerminalTrait
     /** Reverte o ultimo arquivo executado da lista de migration */
     protected static function executePrev()
     {
-        $lasId = self::lastId();
+        $datalayer = Datalayer::get(self::$dbName);
+        $applied = $datalayer->getConfigGroup('migration');
+        $lastId = array_key_last($applied);
 
-        if ($lasId) {
+        if ($lastId) {
+
             $files = self::getFiles();
 
-            if (isset($files[$lasId])) {
-                self::executeMigration($files[$lasId], false);
-                self::lastId(-1);
+            if (($applied[$lastId]['lock'] ?? 0) > 0) {
+                Terminal::echol("[#c:dd,run] [#c:wd,down] [#c:pd,#] [#c:wd,locked]", $files[$lastId]);
+                return false;
+            }
+
+            if (isset($files[$lastId])) {
+                self::executeMigration($files[$lastId], false);
+                self::lastId("-1");
                 return true;
             } else {
-                throw new Error("Migration file [#c:e,$lasId] not found");
+                Terminal::echol("[#c:e,Error:] Migration file [$lastId] not found");
+                return false;
             }
         }
 
-        return  false;
+        return false;
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-use PhpMx\Datalayer\MigrationTerminalTrait;
+use PhpMx\Trait\TerminalMigrationTrait;
 
 /** Executa a próxima migration pendente no banco de dados especificado */
 return new class {
 
-    use MigrationTerminalTrait;
+    use TerminalMigrationTrait;
 
     function __invoke($dbName = 'main')
     {

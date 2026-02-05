@@ -58,7 +58,7 @@ abstract class BaseConnection
     function getConfigGroup(string $group): array
     {
         $this->initConfig();
-        $results = Query::select('__config')->where('group', $group)->run($this->dbName);
+        $results = Query::select('__config')->where('group', $group)->order('id', true)->run($this->dbName);
 
         $data = [];
         foreach ($results as $item) {
