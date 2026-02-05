@@ -17,11 +17,11 @@ return new class {
 
         $file = path("system/datalayer/$dbName/scheme/data.json");
 
-        Terminal::echo("Starting export from [#greenB:$dbName] to [#whiteD:$file]");
+        Terminal::echol("Starting export from [#c:p,#] to [#c:p,#]", [$dbName, $file]);
 
         $export = [];
         foreach ($tables as $table) {
-            Terminal::echo("Preparing [#greenB:$table]");
+            Terminal::echol("Preparing [#c:s,$table]");
             if (isset($map[$table])) {
                 $export[$table] = Query::select($table)->dbName($dbName)->run();
             } else {
@@ -29,10 +29,10 @@ return new class {
             }
         }
 
-        Terminal::echo("Apply export");
+        Terminal::echol("Apply export");
 
         Json::export($file, $export);
 
-        Terminal::echo("Export ended");
+        Terminal::echol("Database [#c:p,#] exported to [#c:p,#]", [$dbName, $file]);
     }
 };

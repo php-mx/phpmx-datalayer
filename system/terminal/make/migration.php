@@ -5,6 +5,7 @@ use PhpMx\Import;
 use PhpMx\Path;
 use PhpMx\Terminal;
 
+/** Cria um novo arquivo de migration com timestamp único e template base no banco especificado */
 return new class {
 
     function __invoke(string $migrationName, string $dbName = 'main')
@@ -31,9 +32,6 @@ return new class {
 
         File::create($file, $template);
 
-        Terminal::echo('Migration [#blueB:#] created successfully [#whiteD:#]', [
-            $migrationName,
-            $file
-        ]);
+        Terminal::echol("File [#c:p,#] created successfully", $file);
     }
 };

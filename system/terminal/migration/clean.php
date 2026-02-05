@@ -1,8 +1,8 @@
 <?php
 
 use PhpMx\Datalayer\MigrationTerminalTrait;
-use PhpMx\Terminal;
 
+/** Reverte todas as migrations executadas no banco de dados, retornando-o ao estado inicial */
 return new class {
 
     use MigrationTerminalTrait;

@@ -16,7 +16,7 @@ return new class {
 
     function __invoke($dbName = 'main')
     {
-        Terminal::echo('Installing drivers');
+        Terminal::echol('Installing drivers');
 
         $dbName = Datalayer::internalName($dbName);
 
@@ -44,7 +44,7 @@ return new class {
             $this->createClass_record($tableName);
         }
 
-        Terminal::echo("Driver installed");
+        Terminal::echol("Driver installed");
     }
 
     protected function createDriver_database(): void
@@ -83,8 +83,7 @@ return new class {
 
         $content = $this->template('driver/main/class', $data);
 
-        File::create($this->path . "/Driver/$fileName.php", $content, true);
-        Terminal::echo("[#greenD:#]", $this->path . "/Driver/$fileName.php");
+        $this->createFile($this->path . "/Driver/$fileName.php", $content, true);
     }
 
     protected function createDriver_table(string $tableName): void
@@ -107,8 +106,7 @@ return new class {
 
         $content = $this->template('driver/table/class', $data);
 
-        File::create($this->path . "/Driver/$fileName.php", $content, true);
-        Terminal::echo("[#greenD:#]", $this->path . "/Driver/$fileName.php");
+        $this->createFile($this->path . "/Driver/$fileName.php", $content, true);
     }
 
     protected function createDriver_record(string $tableName, array $tableMap): void
@@ -217,8 +215,7 @@ return new class {
 
         $content = $this->template('driver/record/class', $data);
 
-        File::create($this->path . "/Driver/$fileName.php", $content, true);
-        Terminal::echo("[#greenD:#]", $this->path . "/Driver/$fileName.php");
+        $this->createFile($this->path . "/Driver/$fileName.php", $content, true);
     }
 
     protected function createClass_database(): void
@@ -229,8 +226,7 @@ return new class {
 
         $content = $this->template('class/main/class', $data);
 
-        File::create($this->path . "/$fileName.php", $content);
-        Terminal::echo("[#green:#]", $this->path . "/$fileName.php");
+        $this->createFile($this->path . "/$fileName.php", $content);
     }
 
     protected function createClass_table(string $tableName): void
@@ -248,8 +244,7 @@ return new class {
 
         $content = $this->template('class/table/class', $data);
 
-        File::create($this->path . "/Table/$fileName.php", $content);
-        Terminal::echo("[#green:#]", $this->path . "/Table/$fileName.php");
+        $this->createFile($this->path . "/Table/$fileName.php", $content);
     }
 
     protected function createClass_record(string $tableName): void
@@ -262,8 +257,7 @@ return new class {
 
         $content = $this->template('class/record/class', $data);
 
-        File::create($this->path . "/Record/$fileName.php", $content);
-        Terminal::echo("[#green:#]", $this->path . "/Record/$fileName.php");
+        $this->createFile($this->path . "/Record/$fileName.php", $content);
     }
 
     /** Retrona um teplate de driver */
@@ -277,6 +271,16 @@ return new class {
         $template = Import::content($template, $data);
 
         return prepare($template, $data);
+    }
+
+    protected function createFile($path, $content, $recreate = false)
+    {
+        if (!$recreate && File::check($path)) {
+            Terminal::echol("[#c:sd,#] [#c:wd,#]", [$path, '[ignored]']);
+        } else {
+            Terminal::echol("[#c:s,#]", $path);
+            File::create($path, $content, $recreate);
+        }
     }
 
     /** Converte um array em string de declaração de array */

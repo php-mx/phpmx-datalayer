@@ -4,6 +4,7 @@ use PhpMx\Datalayer;
 use PhpMx\Json;
 use PhpMx\Terminal;
 
+/** Exporta o mapeamento da estrutura do banco de dados para um arquivo JSON de esquema */
 return new class {
 
     function __invoke($dbName = 'main')
@@ -16,6 +17,6 @@ return new class {
 
         Json::export($file, $map);
 
-        Terminal::echo("[#green:$dbName] map exported to [#witeD:$file]");
+        Terminal::echol("Map [#c:s,#] exported to [#c:p,#]", [$dbName, $file]);
     }
 };

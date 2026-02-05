@@ -23,7 +23,7 @@ trait MigrationTerminalTrait
         $result = self::executeNext();
 
         if (!$result)
-            Terminal::echo('All changes have been applied');
+            Terminal::echol('[#c:s,All changes have been applied]');
 
         return $result;
     }
@@ -35,7 +35,7 @@ trait MigrationTerminalTrait
         $result = self::executePrev();
 
         if (!$result)
-            Terminal::echo('All changes have been reverted');
+            Terminal::echol('[#c:s,All changes have been reverted]');
 
         return $result;
     }
@@ -100,7 +100,7 @@ trait MigrationTerminalTrait
         $logDdName = Datalayer::externalName(self::$dbName, 'db');
 
         Log::add("migration.$logAction", "$logDdName [$file]", function () use ($file, $mode) {
-            Terminal::echo("run [#green:#action] [#whiteD:#file]", [
+            Terminal::echol("run [#c:s,#action] [#c:p,#file]", [
                 'action' => $mode ? 'up' : 'down',
                 'file' => $file,
             ]);
@@ -142,7 +142,7 @@ trait MigrationTerminalTrait
                 self::lastId(-1);
                 return true;
             } else {
-                throw new Error("Migration file [#yellow:$lasId] not found");
+                throw new Error("Migration file [#c:e,$lasId] not found");
             }
         }
 

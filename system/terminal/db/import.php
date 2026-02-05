@@ -19,12 +19,12 @@ return new class {
 
         $map = Datalayer::get($dbName)->getConfig('__dbmap') ?? [];
 
-        Terminal::echo("Starting import from [#whiteD:$file] to [#greenB:$dbName]");
+        Terminal::echol("Starting import from [#c:p,#] to [#c:p,#]", [$file, $dbName]);
 
         $querys = [];
         foreach ($tables as $table) {
             if (isset($map[$table])) {
-                Terminal::echo("| Prepare import table [$table]");
+                Terminal::echol("| Prepare import table [$table]");
                 if (isset($import[$table])) {
                     if (!empty($import[$table])) {
                         $update = [];
@@ -46,10 +46,10 @@ return new class {
             }
         }
 
-        Terminal::echo("| Apply import");
+        Terminal::echol("| Apply import");
 
         Datalayer::get($dbName)->executeQueryList($querys);
 
-        Terminal::echo("Import ended");
+        Terminal::echol("Database [#c:p,#] imported to [#c:p,#]", [$file, $dbName]);
     }
 };
