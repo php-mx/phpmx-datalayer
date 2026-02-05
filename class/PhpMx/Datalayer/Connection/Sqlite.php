@@ -61,10 +61,9 @@ class Sqlite extends BaseConnection
     }
 
     /** Carrega as configurações do banco armazenadas na tabela __config */
-    protected function loadConfig(): void
+    protected function initConfig(): void
     {
-        if (!$this->config) {
-            $this->config = [];
+        if (!$this->configInitialized) {
 
             $configTableExistsQuery =  Query::select('sqlite_master')
                 ->where('type', 'table')
@@ -72,10 +71,17 @@ class Sqlite extends BaseConnection
                 ->limit(1);
 
             if (!count($this->executeQuery($configTableExistsQuery)))
-                $this->executeQuery('CREATE TABLE `__config` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL UNIQUE, `value` TEXT NOT NULL);');
+                $this->executeQuery(
+                    'CREATE TABLE `__config` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+                        `group` TEXT NOT NULL,
+                        `name` TEXT NOT NULL,
+                        `value` TEXT NOT NULL,
+                        UNIQUE(`group`, `name`)
+                    );'
+                );
 
-            foreach ($this->executeQuery(Query::select('__config')) as $config)
-                $this->config[$config['name']] = is_serialized($config['value']) ? unserialize($config['value']) : $config['value'];
+            $this->configInitialized = true;
         }
     }
 
@@ -105,7 +111,7 @@ class Sqlite extends BaseConnection
 
         $listIndexTable = $this->executeQuery("SELECT `name` FROM `sqlite_master` WHERE `tbl_name`='$tableName' and `type` = 'index'");
 
-        $newFields = $this->getConfig('__dbmap')[$tableName]['fields'];
+        $newFields = $this->getConfigGroup('dbmap')[$tableName]['fields'];
 
         foreach (array_keys($fields['drop']) as $fieldName) {
             if (isset($newFields[$fieldName]))

@@ -54,10 +54,9 @@ class Mysql extends BaseConnection
     }
 
     /** Carrega as configurações do banco armazenadas na tabela __config */
-    protected function loadConfig(): void
+    protected function initConfig(): void
     {
-        if (!$this->config) {
-            $this->config = [];
+        if (!$this->configInitialized) {
 
             $configTableExistsQuery = Query::select('INFORMATION_SCHEMA.TABLES')
                 ->where('table_schema', $this->data['data'])
@@ -65,10 +64,17 @@ class Mysql extends BaseConnection
                 ->limit(1);
 
             if (!count($this->executeQuery($configTableExistsQuery)))
-                $this->executeQuery('CREATE TABLE __config (`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(100) NOT NULL UNIQUE, `value` TEXT NOT NULL);');
+                $this->executeQuery(
+                    'CREATE TABLE __config (
+                        `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                        `group` VARCHAR(100) NOT NULL,
+                        `name` VARCHAR(100) NOT NULL,
+                        `value` LONGTEXT NOT NULL,
+                        UNIQUE KEY `config_unique_path` (`group`, `name`)
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;'
+                );
 
-            foreach ($this->executeQuery(Query::select('__config')) as $config)
-                $this->config[$config['name']] = is_serialized($config['value']) ? unserialize($config['value']) : $config['value'];
+            $this->configInitialized = true;
         }
     }
 

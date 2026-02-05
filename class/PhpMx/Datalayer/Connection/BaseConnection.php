@@ -6,6 +6,7 @@ use Exception;
 use PDO;
 use PhpMx\Datalayer\Query;
 use PhpMx\Datalayer\Query\BaseQuery;
+use PhpMx\Json;
 use PhpMx\Log;
 use Throwable;
 
@@ -14,9 +15,9 @@ abstract class BaseConnection
 {
     protected string $dbName;
 
-    protected ?array $config = null;
-
     protected $instancePDO;
+
+    protected bool $configInitialized = false;
 
     protected string $pdoDriver;
 
@@ -39,7 +40,7 @@ abstract class BaseConnection
     abstract protected function schemeQueryUpdateTableIndex(string $name, array $index): array;
 
     /** Carrega as configurações do banco de dados para o cache */
-    abstract protected function loadConfig(): void;
+    abstract protected function initConfig(): void;
 
     final function __construct(string $dbName, protected array $data = [])
     {
@@ -54,25 +55,37 @@ abstract class BaseConnection
     }
 
     /** Retorna uma configuração armazenada no banco */
-    function getConfig(?string $name = null)
+    function getConfigGroup(string $group): array
     {
-        $this->loadConfig();
+        $this->initConfig();
+        $results = Query::select('__config')->where('group', $group)->run($this->dbName);
 
-        return is_null($name) ?  $this->config : $this->config[$name] ?? null;
+        $data = [];
+        foreach ($results as $item) {
+            $val = is_serialized($item['value']) ? unserialize($item['value']) : $item['value'];
+            $key = is_numeric($item['name']) ? (int)$item['name'] : $item['name'];
+            $data[$key] = $val;
+        }
+        return $data;
     }
 
     /** Armazena uma configuração no banco */
-    function setConfig($name, $value)
+    function setConfigGroup(string $group, array $values)
     {
-        $this->loadConfig();
+        $this->initConfig();
 
-        if (in_array($name, array_keys($this->config))) {
-            $query = Query::update('__config')->where('name', $name)->values(['value' => serialize($value)]);
-        } else {
-            $query = Query::insert('__config')->values(['name' => $name, 'value' => serialize($value)]);
-        }
-        $this->executeQuery($query);
-        $this->config[$name] = $value;
+        Query::delete('__config')->where('group', $group)->run($this->dbName);
+
+        $rowsToInsert = [];
+        foreach ($values as $name => $value)
+            $rowsToInsert[] = [
+                'group' => $group,
+                'name'  => $name,
+                'value' => is_serialized($value) ? $value : serialize($value)
+            ];
+
+        if (!empty($rowsToInsert))
+            Query::insert('__config')->values(...$rowsToInsert)->run($this->dbName);
     }
 
     /** Executa uma query */
@@ -105,7 +118,7 @@ abstract class BaseConnection
         });
     }
 
-    /** Executa uma lista de  querys */
+    /** Executa uma lista de querys */
     function executeQueryList(array $queryList = [], bool $transaction = true): array
     {
         try {

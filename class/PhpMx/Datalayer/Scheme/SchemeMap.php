@@ -31,7 +31,7 @@ class SchemeMap
     function __construct(string $dbName)
     {
         $this->dbName = $dbName;
-        $this->map = Datalayer::get($this->dbName)->getConfig('__dbmap') ?? [];
+        $this->map = Datalayer::get($this->dbName)->getConfigGroup('dbmap');
         $this->realMap = $this->map;
     }
 
@@ -44,7 +44,7 @@ class SchemeMap
     /** Salva as alteraçãos do mapa */
     function save(): void
     {
-        Datalayer::get($this->dbName)->setConfig('__dbmap', $this->map);
+        Datalayer::get($this->dbName)->setConfigGroup('dbmap', $this->map);
         $this->realMap = $this->map;
     }
 

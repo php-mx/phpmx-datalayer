@@ -67,9 +67,7 @@ trait MigrationTerminalTrait
     protected static function lastId(?int $id = null): int
     {
         $datalayer = Datalayer::get(self::$dbName);
-        $executed = $datalayer->getConfig('__migration');
-
-        $executed = is_json($executed) ? json_decode($executed, true) : [];
+        $executed = $datalayer->getConfigGroup('migration');
 
         if (!is_null($id)) {
             if ($id > 0) {
@@ -79,7 +77,7 @@ trait MigrationTerminalTrait
             }
         }
 
-        $datalayer->setConfig('__migration', json_encode($executed));
+        $datalayer->setConfigGroup('migration', $executed);
 
         return array_pop($executed) ?? 0;
     }
@@ -88,9 +86,7 @@ trait MigrationTerminalTrait
     protected static function getAppliedMigrations(): array
     {
         $datalayer = Datalayer::get(self::$dbName);
-        $executed = $datalayer->getConfig('__migration');
-
-        return is_json($executed) ? json_decode($executed, true) : [];
+        return $datalayer->getConfigGroup('migration');
     }
 
     /** Executa um arquivo de migration */
