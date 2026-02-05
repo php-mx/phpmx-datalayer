@@ -22,12 +22,12 @@ class Select extends BaseQuery
 
         $query = prepare($query, [
             'fields' => $this->mountFields(),
-            'table'  => $this->mountTable(),
-            'joins'  => $this->mountJoins(),
-            'where'  => $this->mountWhere(),
-            'limit'  => $this->mountLimit(),
-            'order'  => $this->mountOrder(),
-            'group'  => $this->mountGroup(),
+            'table' => $this->mountTable(),
+            'joins' => $this->mountJoins(),
+            'where' => $this->mountWhere(),
+            'limit' => $this->mountLimit(),
+            'order' => $this->mountOrder(),
+            'group' => $this->mountGroup(),
         ]);
 
         $values = [];

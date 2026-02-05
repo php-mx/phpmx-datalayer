@@ -18,13 +18,13 @@ class Update extends BaseQuery
         $query = 'UPDATE [#table] SET [#values] [#where];';
 
         $query = prepare($query, [
-            'table'   => $this->mountTable(),
+            'table' => $this->mountTable(),
             'values' => $this->mountValues(),
-            'where'   => $this->mountWhere(),
+            'where' => $this->mountWhere(),
         ]);
 
         $values = [];
-        $count  = 0;
+        $count = 0;
 
         foreach ($this->where as $where) {
             if (count($where) > 1 && !is_null($where[1])) {
@@ -93,7 +93,7 @@ class Update extends BaseQuery
             if (is_numeric($name)) {
                 $change[] = "`$value` = NULL";
             } else if (is_null($value)) {
-                $change[] =  "`$name` = NULL";
+                $change[] = "`$name` = NULL";
             } else {
                 $change[] = "`$name` = :value_$name";
             }
