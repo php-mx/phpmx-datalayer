@@ -10,17 +10,19 @@ class Select extends BaseQuery
     protected array $order = [];
     protected string $group = '';
     protected array $where = [];
+    protected array $joins = [];
 
     /** Array de Query para execução */
     function query(): array
     {
         $this->check(['table']);
 
-        $query = 'SELECT [#fields] FROM [#table] [#where][#group][#order][#limit];';
+        $query = 'SELECT [#fields] FROM [#table][#joins] [#where][#group][#order][#limit];';
 
         $query = prepare($query, [
             'fields' => $this->mountFields(),
             'table'  => $this->mountTable(),
+            'joins'  => $this->mountJoins(),
             'where'  => $this->mountWhere(),
             'limit'  => $this->mountLimit(),
             'order'  => $this->mountOrder(),
@@ -79,8 +81,9 @@ class Select extends BaseQuery
     /** Define uma paginação para o select */
     function page(int $page, int $limit): static
     {
-        $page = $page ? $limit * $page : 0;
-        $this->limit = "$limit OFFSET $page";
+        $page = max(1, $page);
+        $offset = $limit * ($page - 1);
+        $this->limit = "$limit OFFSET $offset";
         return $this;
     }
 
@@ -107,7 +110,14 @@ class Select extends BaseQuery
             }
             $orderAsc = $orderAsc ? 'ASC' : 'DESC';
 
-            $this->order[] = "`$fieldName` $orderAsc";
+            if (str_contains($fieldName, '.')) {
+                $parts = explode('.', $fieldName);
+                $fieldName = implode('.', array_map(fn($v) => "`$v`", $parts));
+            } else {
+                $fieldName = "`$fieldName`";
+            }
+
+            $this->order[] = "$fieldName $orderAsc";
         }
         return $this;
     }
@@ -162,14 +172,43 @@ class Select extends BaseQuery
             return $this->where('false');
 
         $ids = implode(',', $ids);
-        return $this->where("`$field` in ($ids)");
+        return $this->where("$field in ($ids)");
     }
 
     /** Adiciona um WHERE para ser utilizado na query verificando se um campo é nulo */
     function whereNull(string $campo, bool $status = true): static
     {
-        $this->where($status ? "`$campo` is null" : "`$campo` is not null");
+        $this->where($status ? "$campo is null" : "$campo is not null");
         return $this;
+    }
+
+    /** Adiciona um JOIN à query */
+    function join(string $table, string $condition, string $type = 'INNER'): static
+    {
+        $this->joins[] = [
+            'type' => strtoupper($type),
+            'table' => $table,
+            'condition' => $condition
+        ];
+        return $this;
+    }
+
+    /** Atalho para LEFT JOIN */
+    function leftJoin(string $table, string $condition): static
+    {
+        return $this->join($table, $condition, 'LEFT');
+    }
+
+    /** Atalho para RIGHT JOIN */
+    function rightJoin(string $table, string $condition): static
+    {
+        return $this->join($table, $condition, 'RIGHT');
+    }
+
+    /** Atalho para INNER JOIN */
+    function innerJoin(string $table, string $condition): static
+    {
+        return $this->join($table, $condition, 'INNER');
     }
 
     protected function mountFields(): string
@@ -177,17 +216,40 @@ class Select extends BaseQuery
         $fields = [];
         foreach ($this->fields as $name => $alias) {
             if (!is_numeric($name)) {
-                if (!substr_count($name, '(')) {
-                    if (substr_count($name, '.')) {
-                        $name = explode('.', $name);
-                        $name = array_map(fn($v) => $v != '*' ? $v : $v, $name);
-                        $name = implode('.', $name);
+                // Se o nome contém ' as ', o desenvolvedor passou "tabela.coluna as apelido" no primeiro parâmetro
+                if (str_contains(strtolower($name), ' as ')) {
+                    $parts = preg_split('/ as /i', $name);
+                    $name = trim($parts[0]);
+                    $alias = trim($parts[1]);
+                }
+
+                // Tratamento de funções e crases
+                if (!str_contains($name, '(')) {
+                    if (str_contains($name, '.')) {
+                        $parts = explode('.', $name);
+                        $parts = array_map(fn($v) => $v != '*' ? "`$v`" : $v, $parts);
+                        $name = implode('.', $parts);
+                    } else {
+                        $name = "`$name`";
                     }
                 }
-                $fields[] = $alias ? "$name as $alias" : $name;
+
+                // Montagem final: crase no nome e crase no alias separadamente
+                $fields[] = $alias ? "$name as `$alias`" : $name;
             }
         }
-        return empty($fields) ? '*' : implode(', ', $fields);
+
+        // Trava de segurança para SELECT *
+        if (empty($fields)) {
+            $mainTable = is_array($this->table) ? array_key_first($this->table) : $this->table;
+            if (!empty($mainTable) && is_string($mainTable)) {
+                $pureTable = explode(' ', trim($mainTable))[0];
+                return "`$pureTable`.*";
+            }
+            return '*';
+        }
+
+        return implode(', ', $fields);
     }
 
     protected function mountLimit(): string
@@ -210,13 +272,59 @@ class Select extends BaseQuery
         return empty($this->group) ? '' : ' GROUP BY ' . $this->group;
     }
 
+    protected function mountJoins(): string
+    {
+        if (empty($this->joins))
+            return '';
+
+        $result = [];
+        foreach ($this->joins as $join) {
+            $table = $join['table'];
+            $condition = $join['condition'];
+
+            if (!str_starts_with(trim($table), '(')) {
+                if (!str_contains($table, ' ')) {
+                    $table = "`$table`";
+                } else {
+                    $parts = explode(' ', $table, 2);
+                    $table = "`{$parts[0]}` {$parts[1]}";
+                }
+            }
+
+            $condition = preg_replace_callback('/\b([a-z_][a-z0-9_]*)\b/i', function ($match) {
+                $token = strtolower($match[1]);
+                return in_array($token, $this->sqlKeywords) ? $match[0] : "`{$match[1]}`";
+            }, $condition);
+
+            if (str_contains($condition, '.'))
+                $condition = preg_replace('/`([^`]+)`\.`([^`]+)`/', '`$1`.`$2`', $condition);
+
+            $result[] = " {$join['type']} JOIN $table ON $condition";
+        }
+
+        return implode('', $result);
+    }
+
     protected function mountWhere(): string
     {
-        $return     = [];
+        $return = [];
         $parametros = 0;
         foreach ($this->where as $where) {
             if (count($where) == 1 || is_null($where[1])) {
-                $return[] = $where[0];
+                $expression = $where[0];
+                if (is_string($expression)) {
+                    $expression = preg_replace_callback('/\b([a-z_][a-z0-9_]*)\b/i', function ($match) {
+                        $token = $match[1];
+                        $lowToken = strtolower($token);
+                        if (in_array($lowToken, $this->sqlKeywords) || is_numeric($token))
+                            return $token;
+                        return "`$token`";
+                    }, $expression);
+
+                    if (str_contains($expression, '.'))
+                        $expression = preg_replace('/`([^`]+)`\.`([^`]+)`/', '`$1`.`$2`', $expression);
+                }
+                $return[] = $expression;
             } else {
                 $expression = array_shift($where);
                 if (!substr_count($expression, ' ') && !substr_count($expression, '?'))
@@ -227,17 +335,17 @@ class Select extends BaseQuery
                     return in_array($token, $this->sqlKeywords) ? $match[0] : "`{$match[1]}`";
                 }, $expression);
 
-                $expression = str_replace_all(["'?'", '"?"'], '?', $expression);
+                if (str_contains($expression, '.'))
+                    $expression = preg_replace('/`([^`]+)`\.`([^`]+)`/', '`$1`.`$2`', $expression);
 
+                $expression = str_replace_all(["'?'", '"?"'], '?', $expression);
                 foreach ($where as $v)
                     $expression = str_replace_first('?', ":where_" . ($parametros++), $expression);
 
                 $return[] = $expression;
             }
         }
-
         $return = array_filter($return);
-
         return empty($return) ? '' : 'WHERE (' . implode(') AND (', $return) . ')';
     }
 }

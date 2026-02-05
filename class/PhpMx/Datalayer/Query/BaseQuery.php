@@ -30,12 +30,18 @@ abstract class BaseQuery
         'true',
         'false',
         'as',
-        '?'
+        '?',
+        'inner',
+        'join',
+        'left',
+        'right',
+        'on'
     ];
 
-    function __construct(null|string|array $table)
+    function __construct(null|string|array $table = null)
     {
-        $this->table($table);
+        if ($table)
+            $this->table($table);
     }
 
     /** Array de Query para execução */
@@ -46,13 +52,13 @@ abstract class BaseQuery
     {
         foreach ($dataCheck as $check)
             if (empty($this->$check))
-                throw new Error("Define um valor de [$check] para a query");
+                throw new Error("Defina um valor de [$check] para a query");
     }
 
     /** Executa a query */
     function run(?string $dbName = null): mixed
     {
-        return Datalayer::get($this->dbName ?? $dbName)->executeQuery($this);
+        return Datalayer::get($this->dbName ?? $dbName ?? 'default')->executeQuery($this);
     }
 
     /** Define o banco de dados que deve receber a query */
@@ -69,23 +75,29 @@ abstract class BaseQuery
         return $this;
     }
 
+    /** Monta a string da tabela com as devidas crases */
     protected function mountTable(): string
     {
-        if ($this->table) {
-            if (is_array($this->table)) {
-                $table = [];
-                foreach ($this->table as $name => $alias)
-                    $table[] = !is_numeric($name) ? "`$name` as `$alias`" : "`$alias`";
-                return implode(', ', $table);
-            } elseif (substr_count($this->table, '.')) {
-                $table = explode('.', $this->table);
-                foreach ($table as &$name)
-                    $name = "`$name`";
-                return implode('.', $table);
-            } else {
-                return "`$this->table`";
-            }
+        if (!$this->table)
+            return '';
+
+        if (is_array($this->table)) {
+            $tables = [];
+            foreach ($this->table as $name => $alias)
+                $tables[] = !is_numeric($name) ? "`$name` as `$alias`" : "`$alias`";
+            return implode(', ', $tables);
         }
-        return '';
+
+        if (str_contains($this->table, '.')) {
+            $parts = explode('.', $this->table);
+            return implode('.', array_map(fn($v) => "`$v`", $parts));
+        }
+
+        if (str_contains(trim($this->table), ' ')) {
+            $parts = explode(' ', trim($this->table), 2);
+            return "`{$parts[0]}` {$parts[1]}";
+        }
+
+        return "`$this->table`";
     }
 }

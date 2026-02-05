@@ -18,16 +18,17 @@ class Delete extends BaseQuery
         $query = prepare($query, [
             'table' => $this->mountTable(),
             'where' => $this->mountWhere(),
-            'order'  => $this->mountOrder(),
+            'order' => $this->mountOrder(),
         ]);
 
         $values = [];
+        $parametros = 0;
 
         foreach ($this->where as $where) {
             if (count($where) > 1 && !is_null($where[1])) {
                 array_shift($where);
                 foreach ($where as $v) {
-                    $values['where_' . count($values)] = $v;
+                    $values['where_' . ($parametros++)] = $v;
                 }
             }
         }
@@ -53,12 +54,19 @@ class Delete extends BaseQuery
             }
             $orderAsc = $orderAsc ? 'ASC' : 'DESC';
 
-            $this->order[] = "`$fieldName` $orderAsc";
+            if (str_contains($fieldName, '.')) {
+                $parts = explode('.', $fieldName);
+                $fieldName = implode('.', array_map(fn($v) => "`$v`", $parts));
+            } else {
+                $fieldName = "`$fieldName`";
+            }
+
+            $this->order[] = "$fieldName $orderAsc";
         }
         return $this;
     }
 
-    /** Adiciona um WHERE ao select */
+    /** Adiciona um WHERE ao delete */
     function where(): static
     {
         if (func_num_args())
@@ -70,22 +78,18 @@ class Delete extends BaseQuery
     /** Adiciona um WHERE verificando valores numericos em um array */
     function whereIn(string $field, array|string $ids): static
     {
-        if (is_string($ids))
-            $ids = explode(',', $ids);
-
+        if (is_string($ids)) $ids = explode(',', $ids);
         $ids = array_filter($ids, fn($id) => is_int($id));
-
-        if (!count($ids))
-            return $this->where('false');
+        if (!count($ids)) return $this->where('false');
 
         $ids = implode(',', $ids);
-        return $this->where("`$field` in ($ids)");
+        return $this->where("$field in ($ids)");
     }
 
     /** Adiciona um WHERE para ser utilizado na query verificando se um campo é nulo */
     function whereNull(string $campo, bool $status = true): static
     {
-        $this->where($status ? "`$campo` is null" : "`$campo` is not null");
+        $this->where($status ? "$campo is null" : "$campo is not null");
         return $this;
     }
 
@@ -94,21 +98,32 @@ class Delete extends BaseQuery
         if (empty($this->order))
             return '';
 
-        $fields = implode(', ', $this->order);
-
-        return " ORDER BY $fields";
+        return " ORDER BY " . implode(', ', $this->order);
     }
 
     protected function mountWhere(): string
     {
-        $return     = [];
+        $return = [];
         $parametros = 0;
         foreach ($this->where as $where) {
             if (count($where) == 1 || is_null($where[1])) {
-                $return[] = $where[0];
+                $expression = $where[0];
+                if (is_string($expression)) {
+                    $expression = preg_replace_callback('/\b([a-z_][a-z0-9_]*)\b/i', function ($match) {
+                        $token = $match[1];
+                        $lowToken = strtolower($token);
+                        if (in_array($lowToken, $this->sqlKeywords) || is_numeric($token))
+                            return $token;
+                        return "`$token`";
+                    }, $expression);
+
+                    if (str_contains($expression, '.'))
+                        $expression = preg_replace('/`([^`]+)`\.`([^`]+)`/', '`$1`.`$2`', $expression);
+                }
+                $return[] = $expression;
             } else {
                 $expression = array_shift($where);
-                if (!substr_count($expression, ' ') && !substr_count($expression, '?'))
+                if (!str_contains($expression, ' ') && !str_contains($expression, '?'))
                     $expression = "$expression = ?";
 
                 $expression = preg_replace_callback('/\b([a-z_][a-z0-9_]*)\b/i', function ($match) {
@@ -116,17 +131,17 @@ class Delete extends BaseQuery
                     return in_array($token, $this->sqlKeywords) ? $match[0] : "`{$match[1]}`";
                 }, $expression);
 
-                $expression = str_replace_all(["'?'", '"?"'], '?', $expression);
+                if (str_contains($expression, '.'))
+                    $expression = preg_replace('/`([^`]+)`\.`([^`]+)`/', '`$1`.`$2`', $expression);
 
+                $expression = str_replace(["'?'", '"?"'], '?', $expression);
                 foreach ($where as $v)
                     $expression = str_replace_first('?', ":where_" . ($parametros++), $expression);
 
                 $return[] = $expression;
             }
         }
-
         $return = array_filter($return);
-
         return empty($return) ? '' : 'WHERE (' . implode(') AND (', $return) . ')';
     }
 }

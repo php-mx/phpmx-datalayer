@@ -15,7 +15,7 @@ class Insert extends BaseQuery
     {
         $this->check(['table']);
 
-        $values = [];
+        $binds = [];
 
         if (empty($this->columns)) {
             $query = 'INSERT INTO [#table] VALUES (null)';
@@ -25,21 +25,22 @@ class Insert extends BaseQuery
 
         $query = prepare($query, [
             'table'  => $this->mountTable(),
-            'column'  => $this->mountColumn(),
-            'values'  => $this->mountValues(),
+            'column' => $this->mountColumn(),
+            'values' => $this->mountValues(),
         ]);
+
         foreach ($this->values as $pos => $value) {
             foreach ($this->columns as $field) {
-                if (isset($value[$field])) {
-                    $values[$field . '_' . $pos] = $value[$field];
+                if (array_key_exists($field, $value) && !is_null($value[$field])) {
+                    $binds[$field . '_' . $pos] = $value[$field];
                 }
             }
         }
 
-        return [$query, $values];
+        return [$query, $binds];
     }
 
-    /** Executa a query */
+    /** Executa a query e retorna o ID inserido ou booleano */
     function run(?string $dbName = null): bool|int
     {
         return parent::run($dbName);
@@ -50,6 +51,7 @@ class Insert extends BaseQuery
     {
         $this->columns = [];
         $this->values = [];
+
         foreach (func_get_args() as $register) {
             $insert = [];
             foreach ($register as $field => $value) {
@@ -78,15 +80,15 @@ class Insert extends BaseQuery
     {
         $inserts = [];
         foreach ($this->values as $pos => $value) {
-            $insert = [];
-            foreach ($this->columns as  $field) {
+            $row = [];
+            foreach ($this->columns as $field) {
                 if (!array_key_exists($field, $value) || is_null($value[$field])) {
-                    $insert[] = 'NULL';
+                    $row[] = 'NULL';
                 } else {
-                    $insert[] = ':' . $field . '_' . $pos;
+                    $row[] = ':' . $field . '_' . $pos;
                 }
             }
-            $inserts[] = '(' . implode(', ', $insert) . ')';
+            $inserts[] = '(' . implode(', ', $row) . ')';
         }
         return implode(', ', $inserts);
     }
