@@ -3,6 +3,7 @@
 /composer.lock
 /system/datalayer
 /library/sqlite
+/class/Model
 
 # MX CORE
 
