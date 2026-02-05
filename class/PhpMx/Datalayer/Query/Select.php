@@ -11,6 +11,7 @@ class Select extends BaseQuery
     protected string $group = '';
     protected array $where = [];
     protected array $joins = [];
+    protected bool $distinct = false;
 
     /** Array de Query para execução */
     function query(): array
@@ -47,6 +48,38 @@ class Select extends BaseQuery
     function run(?string $dbName = null): bool|array
     {
         return parent::run($dbName);
+    }
+
+    /** Executa um COUNT e retorna o total de registros */
+    function count(): int
+    {
+        $oldFields = $this->fields;
+        $oldLimit = $this->limit;
+        $oldGroup = $this->group;
+        $oldOrder = $this->order;
+
+        $this->fields = ["COUNT(*)" => 'total'];
+        $this->limit = 0;
+        $this->group = '';
+        $this->order = [];
+
+        $hashCache = md5(serialize($this->query()));
+
+        $total = cacheTime($hashCache, 60, fn() => $this->run()[0]['total']);
+
+        $this->fields = $oldFields;
+        $this->limit = $oldLimit;
+        $this->group = $oldGroup;
+        $this->order = $oldOrder;
+
+        return (int) $total;
+    }
+
+    /** Define se o select deve usar DISTINCT para evitar duplicados */
+    function distinct(bool $distinct = true): static
+    {
+        $this->distinct = $distinct;
+        return $this;
     }
 
     /** Define os campos que devem ser retornados no select, NULL ou * retorna todos os campos */
@@ -216,14 +249,12 @@ class Select extends BaseQuery
         $fields = [];
         foreach ($this->fields as $name => $alias) {
             if (!is_numeric($name)) {
-                // Se o nome contém ' as ', o desenvolvedor passou "tabela.coluna as apelido" no primeiro parâmetro
                 if (str_contains(strtolower($name), ' as ')) {
                     $parts = preg_split('/ as /i', $name);
                     $name = trim($parts[0]);
                     $alias = trim($parts[1]);
                 }
 
-                // Tratamento de funções e crases
                 if (!str_contains($name, '(')) {
                     if (str_contains($name, '.')) {
                         $parts = explode('.', $name);
@@ -234,22 +265,23 @@ class Select extends BaseQuery
                     }
                 }
 
-                // Montagem final: crase no nome e crase no alias separadamente
                 $fields[] = $alias ? "$name as `$alias`" : $name;
             }
         }
 
-        // Trava de segurança para SELECT *
         if (empty($fields)) {
             $mainTable = is_array($this->table) ? array_key_first($this->table) : $this->table;
             if (!empty($mainTable) && is_string($mainTable)) {
                 $pureTable = explode(' ', trim($mainTable))[0];
-                return "`$pureTable`.*";
+                $fieldsStr = "`$pureTable`.*";
+            } else {
+                $fieldsStr = '*';
             }
-            return '*';
+        } else {
+            $fieldsStr = implode(', ', $fields);
         }
 
-        return implode(', ', $fields);
+        return $this->distinct ? "DISTINCT $fieldsStr" : $fieldsStr;
     }
 
     protected function mountLimit(): string
