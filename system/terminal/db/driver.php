@@ -7,6 +7,7 @@ use PhpMx\Import;
 use PhpMx\Path;
 use PhpMx\Terminal;
 
+/** Gera automaticamente a infraestrutura de classes (Drivers, Tables e Records) com base no mapeamento do banco de dados */
 return new class {
 
     protected string $dbName = '';

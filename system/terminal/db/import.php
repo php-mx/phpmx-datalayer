@@ -5,6 +5,7 @@ use PhpMx\Datalayer\Query;
 use PhpMx\Json;
 use PhpMx\Terminal;
 
+/** Importa dados de um arquivo JSON para o banco de dados, realizando a sincronização de registros via Insert ou Update. */
 return new class {
 
     function __invoke($dbName = 'main', $tables = '*')

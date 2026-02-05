@@ -5,6 +5,7 @@ use PhpMx\Datalayer\Query;
 use PhpMx\Json;
 use PhpMx\Terminal;
 
+/** Exporta os dados das tabelas mapeadas no dbmap para um arquivo JSON de sementes. */
 return new class {
 
     function __invoke($dbName = 'main', $tables = '*')
