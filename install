@@ -1,0 +1,17 @@
+<?php
+
+use PhpMx\Trait\TerminalInstallTrait;
+
+return new class {
+
+    use TerminalInstallTrait;
+
+    function __invoke()
+    {
+        $this->blockFile('.gitignore', 'MX-DATALAYER', [
+            '/source/Model/Db*/Driver',
+            '/storage/sqlite',
+            '/system/datalayer/*/scheme',
+        ]);
+    }
+};
