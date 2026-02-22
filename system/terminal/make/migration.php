@@ -27,7 +27,7 @@ return new class {
         $file = path('system/datalayer', $migrationDbName, 'migration', $migrationName);
         $file = File::setEx($file, 'php');
 
-        $template = Path::seekForFile('library/template/terminal/migration.txt');
+        $template = Path::seekForFile('storage/template/terminal/migration.txt');
         $template = Import::content($template);
         $template = prepare($template, [
             'time' => $time,

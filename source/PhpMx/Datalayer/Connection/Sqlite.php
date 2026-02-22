@@ -22,7 +22,7 @@ class Sqlite extends BaseConnection
 
         $file = $this->data['file'] ?? env("DB_{$envName}_FILE") ?? $this->dbName;
 
-        if (!str_starts_with($file, '.')) $file = "library/sqlite/$file";
+        if (!str_starts_with($file, '.')) $file = "storage/sqlite/$file";
 
         $file = trim($file, '.');
         $file = path($file);

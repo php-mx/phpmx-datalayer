@@ -28,7 +28,7 @@ return new class {
 
         $namespace = 'Model\\' . strToPascalCase("db $dbName");
 
-        $path = path('class', $namespace);
+        $path = path('source', $namespace);
 
         $this->dbName = $dbName;
         $this->map = $map;
@@ -266,7 +266,7 @@ return new class {
     /** Retrona um teplate de driver */
     protected function template(string $file, array $data = []): string
     {
-        $template = Path::seekForFile("library/template/terminal/db/$file.txt");
+        $template = Path::seekForFile("storage/template/terminal/db/$file.txt");
 
         $data['dbName'] = $this->dbName;
         $data['namespace'] = $this->namespace;
