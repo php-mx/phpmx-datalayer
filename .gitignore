@@ -1,13 +1,11 @@
 /mx
 /.conf
 /composer.lock
-/system/datalayer
-/library/sqlite
-/class/Model
 
-# MX CORE
+# MX-CORE
 
 /.env
 /vendor
-/library/cache
-/library/certificate
+/.vscode
+/storage/cache
+/storage/certificate

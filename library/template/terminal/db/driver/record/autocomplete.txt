@@ -1,3 +1,0 @@
-
- * @property \PhpMx\Datalayer\Driver\Field\F[#fieldType] $[#fieldMethod] [#fieldComment]
- * @method $this|[#fieldPhpType] [#fieldMethod]() [#fieldComment]

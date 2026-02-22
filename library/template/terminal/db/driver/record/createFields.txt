@@ -1,1 +1,0 @@
-        $this->FIELD['[#fieldMethod]'] = new \PhpMx\Datalayer\Driver\Field\F[#fieldType]('[#fieldMethod]', [#fieldUseNull], [#fieldValue], [#fieldSettings]);
