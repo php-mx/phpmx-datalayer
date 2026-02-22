@@ -2,6 +2,10 @@
 /.conf
 /composer.lock
 
+/source/Model
+/storage/sqlite
+/system/datalayer
+
 # MX-CORE
 
 /.env
