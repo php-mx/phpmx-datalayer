@@ -4,6 +4,7 @@ namespace PhpMx\Datalayer\Driver\Field;
 
 use PhpMx\Datalayer\Driver\Field;
 
+/** Campo de senha (PASSWORD), com hash automático via bcrypt e verificação de valor. */
 class FPassword extends Field
 {
     function set($value): static
@@ -17,7 +18,11 @@ class FPassword extends Field
         return parent::set($value);
     }
 
-    /** Verifica se um valor bate com o hash armazenado */
+    /**
+     * Verifica se um valor corresponde ao hash de senha armazenado.
+     * @param mixed $value Valor a comparar.
+     * @return bool
+     */
     function compare($value): bool
     {
         if (is_null($this->VALUE) || is_null($value))

@@ -4,7 +4,7 @@ namespace PhpMx\Datalayer\Driver;
 
 use Exception;
 
-/** Campo base de um registro, contendo valor, definição de nulidade e validação para persistência. */
+/** @ignore */
 abstract class Field
 {
     protected string $NAME = '';
@@ -13,6 +13,7 @@ abstract class Field
     protected mixed $DEFAULT = null;
     protected bool $NULLABLE = false;
 
+    /** @ignore */
     final function __construct(string $name, bool $nullable, mixed $default, array $settings)
     {
         $this->NAME = $name;
@@ -22,7 +23,11 @@ abstract class Field
         $this->set($this->DEFAULT);
     }
 
-    /** Define um novo valor para o campo */
+    /**
+     * Define um novo valor para o campo.
+     * @param mixed $value Valor a definir (null é substituído pelo padrão se o campo não aceitar nulos).
+     * @return static
+     */
     function set($value): static
     {
         if (!$this->NULLABLE && is_null($value))

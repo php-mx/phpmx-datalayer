@@ -8,7 +8,6 @@ use Error;
 use PhpMx\Log;
 
 /**
- * Classe base de registro que representa uma linha de uma tabela e oferece métodos de acesso, mutação e persistência.
  * @property int|null $id Chave de identificação numérica do registro.
  * @ignore
  */

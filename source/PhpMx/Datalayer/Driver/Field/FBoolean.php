@@ -4,6 +4,7 @@ namespace PhpMx\Datalayer\Driver\Field;
 
 use PhpMx\Datalayer\Driver\Field;
 
+/** Campo booleano (BOOLEAN), com conversão automática para inteiro ao persistir no banco de dados. */
 class FBoolean extends Field
 {
     function set($value): static

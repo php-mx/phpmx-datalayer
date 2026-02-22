@@ -4,6 +4,7 @@ namespace PhpMx\Datalayer\Driver\Field;
 
 use PhpMx\Datalayer\Driver\Field;
 
+/** Campo de data e hora (DATETIME), com conversão automática de timestamp inteiro e CURRENT_TIMESTAMP para string no formato Y-m-d H:i:s. */
 class FDatetime extends Field
 {
     function set($value): static

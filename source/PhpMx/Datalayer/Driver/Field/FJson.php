@@ -4,6 +4,7 @@ namespace PhpMx\Datalayer\Driver\Field;
 
 use PhpMx\Datalayer\Driver\Field;
 
+/** Campo JSON, com conversão automática entre array e string JSON para armazenamento e uso no sistema. */
 class FJson extends Field
 {
     function set($value): static

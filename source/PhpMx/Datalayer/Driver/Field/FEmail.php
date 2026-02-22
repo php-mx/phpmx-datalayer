@@ -4,6 +4,7 @@ namespace PhpMx\Datalayer\Driver\Field;
 
 use Exception;
 
+/** Campo de e-mail, com sanitização, normalização e validação de formato automáticas. */
 class FEmail extends FVarchar
 {
     function set($value): static

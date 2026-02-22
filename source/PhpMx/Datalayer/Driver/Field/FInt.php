@@ -4,6 +4,7 @@ namespace PhpMx\Datalayer\Driver\Field;
 
 use PhpMx\Datalayer\Driver\Field;
 
+/** Campo inteiro (INT), com suporte a valor mínimo, máximo e arredondamento configuráveis. */
 class FInt extends Field
 {
     function set($value): static

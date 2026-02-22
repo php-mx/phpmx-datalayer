@@ -5,6 +5,7 @@ namespace PhpMx\Datalayer\Driver\Field;
 use Exception;
 use PhpMx\Datalayer\Driver\Field;
 
+/** Campo de texto com tamanho variável (VARCHAR), com suporte a corte automático e validação de tamanho máximo. */
 class FVarchar extends Field
 {
     function set($value): static

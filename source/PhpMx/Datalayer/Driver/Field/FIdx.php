@@ -5,6 +5,7 @@ namespace PhpMx\Datalayer\Driver\Field;
 use PhpMx\Datalayer\Driver\Field;
 use PhpMx\Datalayer\Driver\Record;
 
+/** Campo de índice de referência (IDX / foreign key), com acesso direto ao registro referenciado. */
 class FIdx extends Field
 {
     /** @var Record */
@@ -41,7 +42,10 @@ class FIdx extends Field
         return parent::set($value);
     }
 
-    /** Retorna o registro referenciado pelo objeto */
+    /**
+     * Retorna o objeto de registro referenciado pelo campo.
+     * @return Record
+     */
     function _record(): Record
     {
         if (!$this->_checkLoad())
@@ -50,7 +54,10 @@ class FIdx extends Field
         return $this->RECORD;
     }
 
-    /** Salva o registro no banco de dados */
+    /**
+     * Salva o registro referenciado no banco de dados e atualiza o ID armazenado.
+     * @return static
+     */
     function _save()
     {
         $this->_record()->_save();
@@ -58,33 +65,45 @@ class FIdx extends Field
         return $this;
     }
 
-    /** Retorna a chave de identificação numerica do registro */
+    /** Retorna a chave de identificação numérica do registro referenciado. */
     function id()
     {
         return $this->get();
     }
 
-    /** Retorna a chave de identificação cifrada */
+    /**
+     * Retorna a chave de identificação cifrada do registro referenciado.
+     * @return string|null
+     */
     function idKey(): ?string
     {
         if (!$this->_checkInDb()) return null;
         return $this->_table()->idToIdkey($this->get());
     }
 
-    /** Verifica se o objeto referenciado pelo IDX foi carregado */
-    function _checkLoad()
+    /**
+     * Verifica se o objeto referenciado foi carregado em memória.
+     * @return bool
+     */
+    function _checkLoad(): bool
     {
         return boolval($this->RECORD);
     }
 
-    /** Verifica se o registro pode ser salvo no banco de dados */
-    function _checkSave()
+    /**
+     * Verifica se o registro referenciado pode ser salvo no banco de dados.
+     * @return bool
+     */
+    function _checkSave(): bool
     {
         return $this->_checkLoad() ? $this->_record()->_checkSave() : !is_null($this->get());
     }
 
-    /** Verifica se o registro existe no banco de dados */
-    function _checkInDb()
+    /**
+     * Verifica se o registro referenciado existe no banco de dados (id > 0).
+     * @return bool
+     */
+    function _checkInDb(): bool
     {
         return !is_null($this->get()) && $this->get() > 0;
     }
