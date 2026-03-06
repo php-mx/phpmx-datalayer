@@ -8,6 +8,10 @@ return new class {
 
     function __invoke()
     {
+        self::blockFile('.env', 'MX-CORE', [
+            'DB_MAIN_TYPE = sqlite',
+        ]);
+
         $this->blockFile('.gitignore', 'MX-DATALAYER', [
             '/source/Model/Db*/Driver',
             '/storage/sqlite',
