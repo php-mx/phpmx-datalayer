@@ -8,6 +8,11 @@ use PhpMx\Datalayer\Driver\Field;
 /** Campo de texto com tamanho variável (VARCHAR), com suporte a corte automático e validação de tamanho máximo. */
 class FVarchar extends Field
 {
+    /**
+     * Define o valor do campo como string, aplicando corte se configurado e removendo espaços nas extremidades.
+     * @param mixed $value Valor a definir.
+     * @return static
+     */
     function set($value): static
     {
         if (!is_null($value)) {
@@ -21,6 +26,11 @@ class FVarchar extends Field
         return parent::set($value);
     }
 
+    /**
+     * Valida se o valor não excede o tamanho máximo configurado para o campo.
+     * @param mixed $value Valor a validar.
+     * @throws \Exception
+     */
     protected function validade(mixed $value): void
     {
         parent::validade($value);

@@ -307,6 +307,11 @@ abstract class Table
         return !IS_TERMINAL && $this->CACHE_STATUS;
     }
 
+    /**
+     * Constrói uma query Select a partir dos argumentos fornecidos usando typeQuery() para determinar o modo.
+     * @param mixed ...$args Parâmetros de consulta.
+     * @return Select
+     */
     protected function autoQuery(...$args): Select
     {
         switch ($this->typeQuery(...$args)) {
@@ -340,6 +345,11 @@ abstract class Table
         return $query;
     }
 
+    /**
+     * Determina o tipo de consulta com base nos argumentos: 1=all, 2=by id, 3=by where string, 4=by array, 5=by Select.
+     * @param mixed ...$args Parâmetros de consulta.
+     * @return int Código do tipo de consulta.
+     */
     protected function typeQuery(...$args)
     {
         $param = $args[0] ?? null;
@@ -351,6 +361,11 @@ abstract class Table
         return 0;
     }
 
+    /**
+     * Converte um array de dados em um objeto Record, usando cache quando disponível.
+     * @param array $array Dados do registro (deve conter 'id').
+     * @return Record
+     */
     protected function arrayToRecord(array $array): Record
     {
         $id = $array['id'] ?? null;
@@ -361,11 +376,21 @@ abstract class Table
         return new $classRecord($array);
     }
 
+    /**
+     * Verifica se um registro com o ID informado está presente no cache da tabela.
+     * @param int $id ID do registro.
+     * @return bool
+     */
     protected function inCache($id): bool
     {
         return $this->__cacheCheck() && isset($this->CACHE[$id]);
     }
 
+    /**
+     * Retorna o Record do cache se existir, ou cria e armazena um novo a partir do array.
+     * @param array $array Dados do registro.
+     * @return Record
+     */
     protected function &recordCache($array): Record
     {
         $id = $array['id'];

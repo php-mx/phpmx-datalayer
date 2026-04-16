@@ -10,12 +10,17 @@ use PhpMx\Datalayer\Query;
 use PhpMx\Datalayer\Query\BaseQuery;
 use PhpMx\Log;
 
-/** @ignore */
+/** Driver de conexão para PostgreSQL via PDO. Converte backticks para aspas duplas e suporta schemas. */
 class Postgresql extends BaseConnection
 {
     protected string $pdoDriver = 'pdo_pgsql';
 
-    /** Executa uma query */
+    /**
+     * Executa uma query convertendo backticks para aspas duplas (sintaxe PostgreSQL).
+     * @param string|BaseQuery $query Query SQL ou objeto de query.
+     * @param array $data Parâmetros PDO para bind.
+     * @return mixed Resultado da execução.
+     */
     function executeQuery(string|BaseQuery $query, array $data = []): mixed
     {
         if (is_class($query, BaseQuery::class))
@@ -218,7 +223,12 @@ class Postgresql extends BaseConnection
         return [prepare('DROP TABLE IF EXISTS "[#name]";', ['name' => $tableName])];
     }
 
-    /** Retorna somente o tipo de dado PostgreSQL correspondente ao campo */
+    /**
+     * Retorna apenas o tipo de dado PostgreSQL correspondente ao campo, sem nome ou constraints.
+     * @param array $field Mapa de propriedades do campo.
+     * @return string Tipo PostgreSQL (ex: VARCHAR(255), INTEGER, JSONB).
+     * @throws \Exception Se o tipo não for suportado.
+     */
     protected function schemeTemplateFieldTypeOnly(array $field): string
     {
         return match ($field['type']) {
@@ -271,7 +281,14 @@ class Postgresql extends BaseConnection
         return $query;
     }
 
-    /** Retorna o template do campo para composição de querys */
+    /**
+     * Retorna o fragmento SQL de definição de coluna para uso em CREATE/ALTER TABLE.
+     * Mapeia os tipos internos para os tipos nativos do PostgreSQL.
+     * @param string $fieldName Nome do campo.
+     * @param array $field Mapa de propriedades do campo (type, null, default, ...).
+     * @return string Fragmento SQL da coluna.
+     * @throws \Exception Se o tipo do campo não for suportado.
+     */
     protected function schemeTemplateField(string $fieldName, array $field): string
     {
         $field['name'] = $fieldName;
@@ -290,7 +307,12 @@ class Postgresql extends BaseConnection
         return prepare('"[#name]" [#type][#default][#null]', $field);
     }
 
-    /** Formata o valor default corretamente para PostgreSQL */
+    /**
+     * Formata um valor padrão para uso em cláusulas DEFAULT do PostgreSQL.
+     * @param mixed $value Valor padrão (null, CURRENT_TIMESTAMP, bool, numérico ou string).
+     * @param string|null $type Tipo do campo para formatação correta de booleanos.
+     * @return string Valor formatado para SQL.
+     */
     protected function formatDefault(mixed $value, ?string $type = null): string
     {
         if (is_null($value)) return 'NULL';

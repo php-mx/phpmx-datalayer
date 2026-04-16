@@ -9,7 +9,11 @@ use PhpMx\Datalayer;
 use PhpMx\Datalayer\Query;
 use PhpMx\Log;
 
-/** @ignore */
+/**
+ * Driver de conexão para MySQL via PDO.
+ * Configura o DSN a partir das variáveis de ambiente DB_{NAME}_HOST/DATA/USER/PASS/PORT.
+ * @ignore
+ */
 class Mysql extends BaseConnection
 {
     protected string $pdoDriver = 'pdo_mysql';
@@ -160,7 +164,12 @@ class Mysql extends BaseConnection
         return $query;
     }
 
-    /** Retorna o template do campo para composição de querys */
+    /**
+     * Retorna a cláusula SQL de definição de coluna para uso em CREATE TABLE ou ALTER TABLE.
+     * @param string $fieldName Nome do campo.
+     * @param array $field Mapa do campo com type, size, default, null, comment e settings.
+     * @return string
+     */
     protected function schemeTemplateField(string $fieldName, array $field): string
     {
         $field['name'] = $fieldName;

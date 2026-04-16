@@ -5,7 +5,7 @@ namespace PhpMx\Datalayer\Query;
 use Error;
 use PhpMx\Datalayer;
 
-/** @ignore */
+/** Classe base para todos os query builders. Fornece tabela, dbName, execução e montagem de SQL. */
 abstract class BaseQuery
 {
     protected array $data = [];
@@ -51,7 +51,11 @@ abstract class BaseQuery
      */
     abstract function query(): array;
 
-    /** Verifica se os dados estão completos */
+    /**
+     * Verifica se os campos obrigatórios da query foram definidos.
+     * @param array $dataCheck Lista de propriedades a verificar.
+     * @throws \Error Se algum campo obrigatório estiver vazio.
+     */
     protected function check(array $dataCheck = []): void
     {
         foreach ($dataCheck as $check)
@@ -80,13 +84,22 @@ abstract class BaseQuery
         return $this;
     }
 
-    /** Define uma tabela para ser utilizada na query */
+    /**
+     * Define a tabela alvo da query.
+     * @param string|array|null $table Nome da tabela (string), array name=>alias, ou null.
+     * @return static
+     */
     function table(null|string|array $table): static
     {
         $this->table = $table;
         return $this;
     }
 
+    /**
+     * Monta a cláusula FROM da query aplicando backtick-quoting.
+     * Suporta tabela simples, tabela com alias (array), notação schema.tabela e tabela com alias inline.
+     * @return string Fragmento SQL da tabela.
+     */
     protected function mountTable(): string
     {
         if (!$this->table)

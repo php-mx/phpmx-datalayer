@@ -11,6 +11,10 @@ class FIdx extends Field
     /** @var Record */
     protected $RECORD = false;
 
+    /**
+     * Retorna o objeto Table da conexão e tabela referenciadas pelas configurações do campo.
+     * @return \PhpMx\Datalayer\Driver\Table
+     */
     private function _table()
     {
         $datalayer = $this->SETTINGS['datalayer'];
@@ -20,6 +24,11 @@ class FIdx extends Field
         return $driverClass::${$tableMethod};
     }
 
+    /**
+     * Define o ID do registro referenciado. Aceita: ID numérico, true (usa o registro ativo), false/null (limpa), ou objeto Record.
+     * @param mixed $value ID numérico, bool, null ou instância de Record.
+     * @return static
+     */
     function set($value): static
     {
         if (is_numeric($value)) {
@@ -65,7 +74,10 @@ class FIdx extends Field
         return $this;
     }
 
-    /** Retorna a chave de identificação numérica do registro referenciado. */
+    /**
+     * Retorna a chave de identificação numérica do registro referenciado.
+     * @return int|null
+     */
     function id()
     {
         return $this->get();
@@ -108,6 +120,11 @@ class FIdx extends Field
         return !is_null($this->get()) && $this->get() > 0;
     }
 
+    /**
+     * Acesso mágico a propriedades: retorna id, idKey ou delega ao registro referenciado.
+     * @param string $name Nome da propriedade.
+     * @return mixed
+     */
     function __get($name)
     {
         if ($name == 'id')
@@ -119,6 +136,12 @@ class FIdx extends Field
         return $this->_record()->$name;
     }
 
+    /**
+     * Chamada mágica de método: delega ao registro referenciado.
+     * @param string $name Nome do método.
+     * @param array $arguments Argumentos da chamada.
+     * @return mixed
+     */
     function __call($name, $arguments)
     {
         return $this->_record()->$name(...$arguments);

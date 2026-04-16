@@ -38,13 +38,20 @@ abstract class Field
         return $this;
     }
 
-    /** Retorna o valor do campo para ser usado no sistema */
+    /**
+     * Retorna o valor do campo para ser usado no sistema.
+     * @return mixed
+     */
     function get()
     {
         return $this->VALUE;
     }
 
-    /** Retorna o valor do campo para ser usado no banco de dados */
+    /**
+     * Retorna o valor do campo formatado para persistência no banco de dados.
+     * @param bool $validate Se verdadeiro valida o valor antes de retornar.
+     * @return mixed
+     */
     function __internalValue(bool $validate = false)
     {
         $value = $this->VALUE;
@@ -54,7 +61,12 @@ abstract class Field
         return $value;
     }
 
-    /** Verifica se o campo pode ser insetido no banco de dados */
+    /**
+     * Valida se o valor pode ser inserido no banco de dados.
+     * Lança Exception se o campo não aceitar nulos e o valor for null.
+     * @param mixed $value Valor a validar.
+     * @throws \Exception
+     */
     protected function validade(mixed $value): void
     {
         if (!$this->NULLABLE && is_null($value))

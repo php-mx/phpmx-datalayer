@@ -10,7 +10,7 @@ use PhpMx\Dir;
 use PhpMx\File;
 use PhpMx\Log;
 
-/** @ignore */
+/** Driver de conexão para SQLite via PDO. ALTER TABLE é emulado por drop/recriação com migração de dados. */
 class Sqlite extends BaseConnection
 {
     protected string $pdoDriver = 'pdo_sqlite';
@@ -211,7 +211,14 @@ class Sqlite extends BaseConnection
         return $query;
     }
 
-    /** Retorna o template do campo para composição de querys */
+    /**
+     * Retorna o fragmento SQL de definição de coluna para uso em CREATE/ALTER TABLE.
+     * Mapeia os tipos internos para os tipos nativos do SQLite (INTEGER, REAL, TEXT, BLOB).
+     * @param string $fieldName Nome do campo.
+     * @param array $field Mapa de propriedades do campo (type, null, default, ...).
+     * @return string Fragmento SQL da coluna.
+     * @throws \Exception Se o tipo do campo não for suportado.
+     */
     protected function schemeTemplateField(string $fieldName, array $field): string
     {
         $field['name'] = $fieldName;

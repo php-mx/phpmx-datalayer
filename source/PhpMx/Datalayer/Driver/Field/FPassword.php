@@ -7,6 +7,11 @@ use PhpMx\Datalayer\Driver\Field;
 /** Campo de senha (PASSWORD), com hash automático via bcrypt e verificação de valor. */
 class FPassword extends Field
 {
+    /**
+     * Define a senha do campo gerando hash bcrypt automaticamente se o valor não for já um hash.
+     * @param mixed $value Valor a definir (texto simples ou hash bcrypt).
+     * @return static
+     */
     function set($value): static
     {
         if (!is_null($value)) {

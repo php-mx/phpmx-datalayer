@@ -7,6 +7,11 @@ use PhpMx\Datalayer\Driver\Field;
 /** Campo hash MD5, com conversão automática do valor e verificação de igualdade. */
 class FMd5 extends Field
 {
+    /**
+     * Define o valor do campo convertendo-o para hash MD5 se ainda não estiver no formato correto.
+     * @param mixed $value Valor a definir.
+     * @return static
+     */
     function set($value): static
     {
         if (!is_null($value))

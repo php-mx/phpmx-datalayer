@@ -20,25 +20,53 @@ abstract class BaseConnection
 
     protected string $pdoDriver;
 
-    /** Inicializa a conexão */
+    /**
+     * Carrega as configurações da conexão a partir das variáveis de ambiente e inicializa o DSN.
+     */
     abstract protected function load();
 
-    /** Retorna a instancia PDO da conexão */
+    /**
+     * Retorna a instância PDO da conexão, criando-a na primeira chamada.
+     * @return PDO
+     */
     abstract protected function &pdo(): PDO;
 
-    /** Query para criação de tabelas */
+    /**
+     * Retorna as queries SQL necessárias para criar uma tabela com os campos informados.
+     * @param string $name Nome da tabela.
+     * @param string|null $comment Comentário da tabela.
+     * @param array $fields Campos a incluir na criação.
+     * @return array
+     */
     abstract protected function schemeQueryCreateTable(string $name, ?string $comment, array $fields): array;
 
-    /** Query para alteração de tabelas */
+    /**
+     * Retorna as queries SQL necessárias para alterar uma tabela existente.
+     * @param string $name Nome da tabela.
+     * @param string|null $comment Comentário da tabela.
+     * @param array $fields Campos a adicionar, alterar ou remover.
+     * @return array
+     */
     abstract protected function schemeQueryAlterTable(string $name, ?string $comment, array $fields): array;
 
-    /** Query para remoção de tabelas */
+    /**
+     * Retorna as queries SQL necessárias para remover uma tabela.
+     * @param string $name Nome da tabela.
+     * @return array
+     */
     abstract protected function schemeQueryDropTable(string $name): array;
 
-    /** Query para remoção de tabelas */
+    /**
+     * Retorna as queries SQL necessárias para criar ou remover índices de uma tabela.
+     * @param string $name Nome da tabela.
+     * @param array $index Mapa de índices [indexName => [campo, unique] | false].
+     * @return array
+     */
     abstract protected function schemeQueryUpdateTableIndex(string $name, array $index): array;
 
-    /** Carrega as configurações do banco de dados para o cache */
+    /**
+     * Garante que a tabela __config exista no banco de dados, criando-a se necessário.
+     */
     abstract protected function initConfig(): void;
 
     /** @ignore */

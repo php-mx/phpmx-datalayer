@@ -7,6 +7,12 @@ use PhpMx\Datalayer\Driver\Field;
 /** Campo inteiro (INT), com suporte a valor mínimo, máximo e arredondamento configuráveis. */
 class FInt extends Field
 {
+    /**
+     * Define o valor inteiro do campo, aplicando intervalo min/max e arredondamento configurados.
+     * Valores não numéricos são convertidos para null.
+     * @param mixed $value Valor a definir.
+     * @return static
+     */
     function set($value): static
     {
         if (is_numeric($value)) {

@@ -26,8 +26,16 @@ abstract class Migration
         $this->scheme->apply();
     }
 
+    /**
+     * Aplica as alterações do esquema (criar/alterar tabelas e campos).
+     * Implementar na subclasse com as definições da migração.
+     */
     abstract function up();
 
+    /**
+     * Reverte as alterações do esquema aplicadas em up().
+     * Implementar na subclasse para desfazer as mudanças.
+     */
     abstract function down();
 
     /**

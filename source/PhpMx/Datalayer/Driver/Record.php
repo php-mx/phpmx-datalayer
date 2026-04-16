@@ -361,6 +361,9 @@ abstract class Record
         return $this;
     }
 
+    /**
+     * Salva todos os campos FIdx com registros carregados antes de persistir o registro principal.
+     */
     final protected function __runSaveIdx()
     {
         foreach ($this->FIELD as &$field) {
@@ -370,6 +373,10 @@ abstract class Record
         }
     }
 
+    /**
+     * Executa a criação do registro no banco de dados e atualiza o ID e cache.
+     * Dispara o hook _onCreate(); retorna false ou callable para abortar/pós-processamento.
+     */
     final protected function __runCreate()
     {
         $this->__runSaveIdx();
@@ -392,6 +399,11 @@ abstract class Record
         }
     }
 
+    /**
+     * Executa a atualização do registro no banco de dados, enviando apenas os campos alterados.
+     * Dispara o hook _onUpdate(); retorna false ou callable para abortar/pós-processamento.
+     * @param bool $forceUpdate Se verdadeiro força o UPDATE mesmo sem alterações detectadas.
+     */
     final protected function __runUpdate(bool $forceUpdate)
     {
         Log::changeScope('driver.update', prepare("[#].[#]([#])", [strToPascalCase("db $this->DATALAYER"), strToCamelCase($this->TABLE), $this->id()]));
@@ -426,6 +438,10 @@ abstract class Record
         }
     }
 
+    /**
+     * Executa a exclusão lógica do registro (soft-delete) preenchendo o campo _deleted.
+     * Dispara o hook _onDelete(); retorna false ou callable para abortar/pós-processamento.
+     */
     final protected function __runDelete()
     {
         Log::changeScope('driver.delete', prepare("[#].[#]([#])", [strToPascalCase("db $this->DATALAYER"), strToCamelCase($this->TABLE), $this->id()]));
@@ -454,6 +470,10 @@ abstract class Record
         }
     }
 
+    /**
+     * Restaura um registro excluído logicamente limpando o campo _deleted.
+     * Dispara o hook _onUndelete(); retorna false ou callable para abortar/pós-processamento.
+     */
     final protected function __runUndelete()
     {
         Log::changeScope('driver.undelete', prepare("[#].[#]([#])", [strToPascalCase("db $this->DATALAYER"), strToCamelCase($this->TABLE), $this->id()]));
@@ -482,6 +502,11 @@ abstract class Record
         }
     }
 
+    /**
+     * Acesso mágico a propriedades: retorna o ID, idKey ou o objeto Field pelo nome.
+     * @param string $name Nome da propriedade ('id', 'idKey' ou nome de campo).
+     * @return mixed
+     */
     final function __get($name)
     {
         if ($name == 'id') return $this->ID;
@@ -494,6 +519,12 @@ abstract class Record
         return $this->FIELD[$name];
     }
 
+    /**
+     * Chamada mágica de método: sem argumentos retorna o valor do campo; com argumentos define o valor.
+     * @param string $name Nome do campo.
+     * @param array $arguments Argumentos passados na chamada.
+     * @return mixed|static Valor do campo ou $this para encadeamento.
+     */
     final function __call($name, $arguments)
     {
         if (!isset($this->FIELD[$name]))
@@ -506,11 +537,27 @@ abstract class Record
         return $this;
     }
 
+    /**
+     * Hook chamado antes de criar o registro no banco de dados.
+     * Retorne false para abortar a criação, ou um callable para executar após a criação.
+     */
     protected function _onCreate() {}
 
+    /**
+     * Hook chamado antes de atualizar o registro no banco de dados.
+     * Retorne false para abortar a atualização, ou um callable para executar após a atualização.
+     */
     protected function _onUpdate() {}
 
+    /**
+     * Hook chamado antes de excluir logicamente o registro.
+     * Retorne false para abortar a exclusão, ou um callable para executar após a exclusão.
+     */
     protected function _onDelete() {}
 
+    /**
+     * Hook chamado antes de restaurar um registro excluído logicamente.
+     * Retorne false para abortar a restauração, ou um callable para executar após a restauração.
+     */
     protected function _onUndelete() {}
 }

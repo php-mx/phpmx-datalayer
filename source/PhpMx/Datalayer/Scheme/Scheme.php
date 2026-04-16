@@ -16,12 +16,22 @@ class Scheme
     /** @var SchemeTable[] */
     protected array $table = [];
 
+    /**
+     * Inicializa o Scheme carregando o mapa atual do banco de dados.
+     * @param string $dbName Nome do banco de dados.
+     */
     function __construct(string $dbName)
     {
         $this->dbName = Datalayer::internalName($dbName);
         $this->map = new SchemeMap($this->dbName);
     }
 
+    /**
+     * Retorna ou cria o objeto SchemeTable para a tabela informada.
+     * @param string $table Nome da tabela.
+     * @param string|null $comment Comentário descritivo da tabela (opcional).
+     * @return SchemeTable
+     */
     function &table(string $table, ?string $comment = null): SchemeTable
     {
         $table = Datalayer::internalName($table);
@@ -36,6 +46,9 @@ class Scheme
         return $this->table[$table];
     }
 
+    /**
+     * Calcula o diff entre o esquema declarado e o mapa atual e aplica as queries no banco de dados.
+     */
     function apply(): void
     {
         $listTable = $this->getAlterListTable();
@@ -84,6 +97,12 @@ class Scheme
         $this->map->save();
     }
 
+    /**
+     * Compara os campos declarados com o mapa atual e retorna arrays de campos a adicionar, alterar, remover e reindexar.
+     * @param string $tableName Nome da tabela.
+     * @param array $alterFields Mapa dos campos declarados na migração.
+     * @return array Estrutura com 'add', 'alter', 'drop' e 'index'.
+     */
     protected function getAlterTableFields(string $tableName, array $alterFields): array
     {
         $fields = ['add' => [], 'alter' => [], 'drop' => [], 'index' => []];
@@ -131,6 +150,10 @@ class Scheme
         return $fields;
     }
 
+    /**
+     * Retorna a lista de tabelas que precisam ser criadas, alteradas ou removidas.
+     * @return array Mapa [tableName => alterMap|false].
+     */
     protected function getAlterListTable(): array
     {
         $listTable = [];

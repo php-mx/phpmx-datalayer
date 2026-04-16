@@ -6,7 +6,11 @@ use PDO;
 use PhpMx\Datalayer;
 use PhpMx\Log;
 
-/** @ignore */
+/**
+ * Driver de conexão para MariaDB via PDO.
+ * Estende Mysql, sobrescrevendo apenas o log de inicialização da conexão.
+ * @ignore
+ */
 class Mariadb extends Mysql
 {
     /** Retorna a instancia PDO da conexão */

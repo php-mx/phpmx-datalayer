@@ -26,9 +26,9 @@ abstract class Datalayer
     ];
 
     /**
-     * Registra uma nova conexão com o banco de dados.
+     * Retorna a conexão ativa com o banco de dados, registrando-a na primeira chamada.
      * @param string $dbName Nome do banco de dados.
-     * @param array $data Dados de configuração da conexão (opcional, usa variáveis de ambiente por padrão).
+     * @return BaseConnection
      */
     static function &get(string $dbName): BaseConnection
     {
